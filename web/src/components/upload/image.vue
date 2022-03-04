@@ -9,7 +9,7 @@
       :before-upload="beforeImageUpload"
       :multiple="false"
     >
-      <el-button size="mini" type="primary">压缩上传</el-button>
+      <el-button size="mini" type="primary">支付凭证和资料上传</el-button>
     </el-upload>
   </div>
 </template>
