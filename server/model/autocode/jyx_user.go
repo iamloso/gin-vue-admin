@@ -40,6 +40,9 @@ type JyxUser struct {
       WorkDate  string `json:"workDate" form:"workDate" gorm:"column:workDate;comment:参加工作时间;size:64;"`
       WorkType  string `json:"workType" form:"workType" gorm:"column:workType;comment:工种名称;size:64;"`
       WorkYear  string `json:"workYear" form:"workYear" gorm:"column:workYear;comment:专业年限;size:64;"`
+      UserCertify  string `json:"userCertify" form:"userCertify" gorm:"column:userCertify;comment:学籍在线证明或工作证明;size:600;"`
+      UserPic  string `json:"userPic" form:"userPic" gorm:"column:userPic;comment:用户照片;size:600;"`
+      UserPay  string `json:"userPay" form:"userPay" gorm:"column:userPay;comment:支付凭证;size:600;"`
 }
 
 

@@ -2,16 +2,16 @@ package upload
 
 import (
 	"errors"
+	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
 	"io"
 	"mime/multipart"
 	"os"
 	"path"
 	"strings"
 	"time"
-
-	"github.com/flipped-aurora/gin-vue-admin/server/global"
-	"github.com/flipped-aurora/gin-vue-admin/server/utils"
-	"go.uber.org/zap"
 )
 
 type Local struct{}
@@ -25,22 +25,37 @@ type Local struct{}
 //@param: file *multipart.FileHeader
 //@return: string, string, error
 
-func (*Local) UploadFile(file *multipart.FileHeader) (string, string, error) {
+func (*Local) UploadFile(file *multipart.FileHeader, c *gin.Context) (string, string, error) {
+	var filename, name, filePath string
+	filePath = global.GVA_CONFIG.Local.Path
+
+	UID := c.Request.Header.Get("UID")
+	picType := c.Request.Header.Get("picType")
+
 	// 读取文件后缀
 	ext := path.Ext(file.Filename)
 	// 读取文件名并加密
-	name := strings.TrimSuffix(file.Filename, ext)
-	name = utils.MD5V([]byte(name))
-	// 拼接新文件名
-	filename := name + "_" + time.Now().Format("20060102150405") + ext
+	name = strings.TrimSuffix(file.Filename, ext)
+	if picType != "" {
+		filePath = global.GVA_CONFIG.Local.Path + "/" + picType
+		if UID != "" && (picType == "userPic" || picType == "userPay") {
+			filename = UID + ext
+		} else {
+			filename = name + "_" + time.Now().Format("20060102150405") + ext
+		}
+	} else {
+		name = utils.MD5V([]byte(name))
+		// 拼接新文件名
+		filename = name + "_" + time.Now().Format("20060102150405") + ext
+	}
 	// 尝试创建此路径
-	mkdirErr := os.MkdirAll(global.GVA_CONFIG.Local.Path, os.ModePerm)
+	mkdirErr := os.MkdirAll(filePath, os.ModePerm)
 	if mkdirErr != nil {
 		global.GVA_LOG.Error("function os.MkdirAll() Filed", zap.Any("err", mkdirErr.Error()))
 		return "", "", errors.New("function os.MkdirAll() Filed, err:" + mkdirErr.Error())
 	}
 	// 拼接路径和文件名
-	p := global.GVA_CONFIG.Local.Path + "/" + filename
+	p := filePath + "/" + filename
 
 	f, openError := file.Open() // 读取文件
 	if openError != nil {

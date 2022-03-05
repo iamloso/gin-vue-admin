@@ -3,6 +3,7 @@ package upload
 import (
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"mime/multipart"
 	"time"
 
@@ -25,7 +26,7 @@ type AwsS3 struct{}
 //@param: file *multipart.FileHeader
 //@return: string, string, error
 
-func (*AwsS3) UploadFile(file *multipart.FileHeader) (string, string, error) {
+func (*AwsS3) UploadFile(file *multipart.FileHeader, c *gin.Context) (string, string, error) {
 	session := newSession()
 	uploader := s3manager.NewUploader(session)
 

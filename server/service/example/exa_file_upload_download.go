@@ -2,6 +2,7 @@ package example
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"mime/multipart"
 	"strings"
 
@@ -78,9 +79,9 @@ func (e *FileUploadAndDownloadService) GetFileRecordInfoList(info request.PageIn
 //@param: header *multipart.FileHeader, noSave string
 //@return: err error, file model.ExaFileUploadAndDownload
 
-func (e *FileUploadAndDownloadService) UploadFile(header *multipart.FileHeader, noSave string) (err error, file example.ExaFileUploadAndDownload) {
+func (e *FileUploadAndDownloadService) UploadFile(header *multipart.FileHeader, noSave string, c *gin.Context) (err error, file example.ExaFileUploadAndDownload) {
 	oss := upload.NewOss()
-	filePath, key, uploadErr := oss.UploadFile(header)
+	filePath, key, uploadErr := oss.UploadFile(header, c)
 	if uploadErr != nil {
 		panic(err)
 	}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"mime/multipart"
 	"net/http"
 	"net/url"
@@ -18,7 +19,7 @@ import (
 type TencentCOS struct{}
 
 // UploadFile upload file to COS
-func (*TencentCOS) UploadFile(file *multipart.FileHeader) (string, string, error) {
+func (*TencentCOS) UploadFile(file *multipart.FileHeader, c *gin.Context) (string, string, error) {
 	client := NewClient()
 	f, openError := file.Open()
 	if openError != nil {

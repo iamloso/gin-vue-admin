@@ -30,5 +30,9 @@ create table gva.jyx_user (
                               city varchar(64) comment '城市',
                               OCO varchar(64) comment '原证书职业',
                               OCL varchar(64) comment '原证书等级',
-                              OCN varchar(64) comment '原证书编号'
+                              OCN varchar(64) comment '原证书编号',
+                              userPic varchar(600) comment '用户照片',
+                              userCertify varchar(600) comment '学籍在线证明或工作证明',
+                              userPay varchar(600) comment '支付凭证'
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+

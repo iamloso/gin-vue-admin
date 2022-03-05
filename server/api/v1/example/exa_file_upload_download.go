@@ -29,7 +29,7 @@ func (u *FileUploadAndDownloadApi) UploadFile(c *gin.Context) {
 		response.FailWithMessage("接收文件失败", c)
 		return
 	}
-	err, file = fileUploadAndDownloadService.UploadFile(header, noSave) // 文件上传后拿到文件路径
+	err, file = fileUploadAndDownloadService.UploadFile(header, noSave, c) // 文件上传后拿到文件路径
 	if err != nil {
 		global.GVA_LOG.Error("修改数据库链接失败!", zap.Error(err))
 		response.FailWithMessage("修改数据库链接失败", c)

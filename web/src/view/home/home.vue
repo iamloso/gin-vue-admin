@@ -7,7 +7,23 @@
       </el-header>
       <el-main>
         <el-form ref="elForm" :model="formData" :rules="rules" size="small" label-width="100px">
-          <el-scrollbar height="600px">
+          <el-scrollbar height="800px">
+            <el-form-item label="报名项目" prop="professionalName">
+              <el-select
+                v-model="formData.professionalName"
+                placeholder="请选择报名"
+                clearable
+                :style="{width: '100%'}"
+              >
+                <el-option
+                  v-for="(item, index) in professionalNameOptions"
+                  :key="index"
+                  :label="item.label"
+                  :value="item.label"
+                  :disabled="item.disabled"
+                />
+              </el-select>
+            </el-form-item>
             <el-form-item label="姓名" prop="name">
               <el-input
                 v-model="formData.name"
@@ -15,6 +31,9 @@
                 clearable
                 :style="{width: '100%'}"
               />
+            </el-form-item>
+            <el-form-item label="手机号" prop="phone">
+              <el-input v-model="formData.phone" placeholder="请输入手机号" clearable :style="{width: '100%'}" />
             </el-form-item>
             <el-form-item label="证件类型" prop="IDType">
               <el-select v-model="formData.IDType" placeholder="请输入证件类型" clearable :style="{width: '100%'}">
@@ -30,10 +49,84 @@
             <el-form-item label="证件号" prop="ID">
               <el-input v-model="formData.ID" placeholder="请输入证件号" clearable :style="{width: '100%'}" />
             </el-form-item>
+            <el-form-item label="照片" prop="name">
+              <div class="gva-btn-list">
+                <el-upload
+                    :action="`${path}/fileUploadAndDownload/upload`"
+                    :before-upload="checkFile"
+                    :headers="{ 'x-token': userStore.token, 'UID': formData.ID, 'picType': 'userPic' }"
+                    :on-error="uploadError"
+                    :on-success="uploadSuccess"
+                    :show-file-list="true"
+                    class="upload-btn"
+                >
+                  <el-button size="mini" type="primary">点击上传</el-button>
+                </el-upload>
+                <span style="padding-left: 20px; color: red">Tips: 二寸、白底、免冠</span>
+              </div>
+            </el-form-item>
             <el-form-item label="性别" prop="sex">
               <el-select v-model="formData.sex" placeholder="请选择性别" clearable :style="{width: '100%'}">
                 <el-option
                   v-for="(item, index) in sexOptions"
+                  :key="index"
+                  :label="item.label"
+                  :value="item.label"
+                  :disabled="item.disabled"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="民族" prop="nation">
+              <el-select v-model="formData.nation" placeholder="请选择民族" clearable :style="{width: '100%'}">
+                <el-option
+                  v-for="(item, index) in nationOptions"
+                  :key="index"
+                  :label="item.label"
+                  :value="item.label"
+                  :disabled="item.disabled"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="省份" prop="province">
+              <el-select v-model="formData.province" placeholder="请选择省份" clearable :style="{width: '100%'}" @change="genCity">
+                <el-option
+                  v-for="(item, index) in province"
+                  :key="index"
+                  :label="item"
+                  :value="item"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="城市" prop="city">
+              <el-select v-model="formData.city" placeholder="请选择城市" clearable :style="{width: '100%'}">
+                <el-option
+                  v-for="(item, index) in city"
+                  :key="index"
+                  :label="item"
+                  :value="item"
+                />
+              </el-select>
+            </el-form-item>
+            <el-form-item label="证明" prop="name">
+              <div class="gva-btn-list">
+                <el-upload
+                    :action="`${path}/fileUploadAndDownload/upload`"
+                    :before-upload="checkFile"
+                    :headers="{ 'x-token': userStore.token, 'UID': formData.ID, 'picType': 'userCertify' }"
+                    :on-error="uploadError"
+                    :on-success="uploadSuccess"
+                    :show-file-list="true"
+                    class="upload-btn"
+                >
+                  <el-button size="mini" type="primary">点击上传</el-button>
+                </el-upload>
+                <span style="padding-left: 20px; color: red">上传：学籍在线证明或工作证明及身份证</span>
+              </div>
+            </el-form-item>
+            <el-form-item label="所在单位" prop="currentUnit">
+              <el-select v-model="formData.currentUnit" placeholder="请选择所在单位" clearable :style="{width: '100%'}">
+                <el-option
+                  v-for="(item, index) in currentUnitOptions"
                   :key="index"
                   :label="item.label"
                   :value="item.label"
@@ -83,15 +176,10 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="职业名称" prop="professionalName">
-              <el-select
-                v-model="formData.professionalName"
-                placeholder="请选择职业名称"
-                clearable
-                :style="{width: '100%'}"
-              >
+            <el-form-item label="职业" prop="work">
+              <el-select v-model="formData.work" placeholder="请选择职业" clearable :style="{width: '100%'}">
                 <el-option
-                  v-for="(item, index) in professionalNameOptions"
+                  v-for="(item, index) in workOptions"
                   :key="index"
                   :label="item.label"
                   :value="item.label"
@@ -99,11 +187,8 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="工种名称" prop="workType">
-              <el-select v-model="formData.workType" placeholder="请选择工种名称" clearable :style="{width: '100%'}" />
-            </el-form-item>
-            <el-form-item label="级别" prop="level">
-              <el-select v-model="formData.level" placeholder="请选择级别" clearable :style="{width: '100%'}">
+            <el-form-item v-if="showLevel()" label="年级" prop="level">
+              <el-select v-model="formData.level" placeholder="请选择年级" clearable :style="{width: '100%'}">
                 <el-option
                   v-for="(item, index) in levelOptions"
                   :key="index"
@@ -113,8 +198,8 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="申请条件" prop="condition">
-              <el-select v-model="formData.condition" placeholder="请选择申请条件" clearable :style="{width: '100%'}">
+            <el-form-item v-if="showLevel()" label="班级" prop="condition">
+              <el-select v-model="formData.condition" placeholder="请选择班级" clearable :style="{width: '100%'}">
                 <el-option
                   v-for="(item, index) in conditionOptions"
                   :key="index"
@@ -124,28 +209,11 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="手机号" prop="phone">
-              <el-input v-model="formData.phone" placeholder="请输入手机号" clearable :style="{width: '100%'}" />
-            </el-form-item>
             <el-form-item label="参加工作时间" prop="workDate">
               <el-input v-model="formData.workDate" placeholder="请输入参加工作时间" clearable :style="{width: '100%'}" />
             </el-form-item>
-            <el-form-item label="从事专业" prop="work">
-              <el-input v-model="formData.work" placeholder="请输入从事专业" clearable :style="{width: '100%'}" />
-            </el-form-item>
             <el-form-item label="专业年限" prop="workYear">
               <el-input v-model="formData.workYear" placeholder="请输入专业年限" clearable :style="{width: '100%'}" />
-            </el-form-item>
-            <el-form-item label="民族" prop="nation">
-              <el-select v-model="formData.nation" placeholder="请选择民族" clearable :style="{width: '100%'}">
-                <el-option
-                  v-for="(item, index) in nationOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item.label"
-                  :disabled="item.disabled"
-                />
-              </el-select>
             </el-form-item>
             <el-form-item label="政治面貌" prop="politicalStatus">
               <el-select
@@ -163,6 +231,9 @@
                 />
               </el-select>
             </el-form-item>
+            <!--            <el-form-item label="工种名称" prop="workType">-->
+            <!--              <el-select v-model="formData.workType" placeholder="请选择工种名称" clearable :style="{width: '100%'}" />-->
+            <!--            </el-form-item>-->
             <el-form-item label="学历证书编号" prop="serialNumber">
               <el-input v-model="formData.serialNumber" placeholder="请输入学历证书编号" clearable :style="{width: '100%'}" />
             </el-form-item>
@@ -178,17 +249,6 @@
             <el-form-item label="邮政编号" prop="postalCode">
               <el-input v-model="formData.postalCode" placeholder="请输入邮政编号" clearable :style="{width: '100%'}" />
             </el-form-item>
-            <el-form-item label="所在单位" prop="currentUnit">
-              <el-select v-model="formData.currentUnit" placeholder="请选择所在单位" clearable :style="{width: '100%'}">
-                <el-option
-                  v-for="(item, index) in currentUnitOptions"
-                  :key="index"
-                  :label="item.label"
-                  :value="item.label"
-                  :disabled="item.disabled"
-                />
-              </el-select>
-            </el-form-item>
             <el-form-item label="通讯地址" prop="address">
               <el-input v-model="formData.address" placeholder="请输入通讯地址" clearable :style="{width: '100%'}" />
             </el-form-item>
@@ -201,26 +261,6 @@
             <el-form-item label="户籍所在地" prop="place">
               <el-input v-model="formData.place" placeholder="请输入户籍所在地" clearable :style="{width: '100%'}" />
             </el-form-item>
-            <el-form-item label="省份" prop="province">
-              <el-select v-model="formData.province" placeholder="请选择省份" clearable :style="{width: '100%'}" @change="genCity">
-                <el-option
-                  v-for="(item, index) in province"
-                  :key="index"
-                  :label="item"
-                  :value="item"
-                />
-              </el-select>
-            </el-form-item>
-            <el-form-item label="城市" prop="city">
-              <el-select v-model="formData.city" placeholder="请选择城市" clearable :style="{width: '100%'}">
-                <el-option
-                  v-for="(item, index) in city"
-                  :key="index"
-                  :label="item"
-                  :value="item"
-                />
-              </el-select>
-            </el-form-item>
             <el-form-item label="原证书职业" prop="OCO">
               <el-input v-model="formData.OCO" placeholder="请输入原证书职业" clearable :style="{width: '100%'}" />
             </el-form-item>
@@ -229,6 +269,35 @@
             </el-form-item>
             <el-form-item label="原证书编号" prop="OCN">
               <el-input v-model="formData.OCN" placeholder="请输入原证书编号" clearable :style="{width: '100%'}" />
+            </el-form-item>
+            <el-form-item label="">
+              <img style="float: left" src="./pay.png" width="180">
+            </el-form-item>
+            <el-form-item label="扫码支付" prop="payment">
+              <el-radio-group v-model="formData.payment" size="medium">
+                <el-radio
+                  v-for="(item, index) in paymentOptions"
+                  :key="index"
+                  :label="item.value"
+                  :disabled="item.disabled"
+                >{{ item.label }}</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="支付凭证" prop="name">
+              <div class="gva-btn-list">
+                <el-upload
+                    :action="`${path}/fileUploadAndDownload/upload`"
+                    :before-upload="checkFile"
+                    :headers="{ 'x-token': userStore.token, 'UID': formData.ID, 'picType': 'userPay' }"
+                    :on-error="uploadError"
+                    :on-success="uploadSuccess"
+                    :show-file-list="true"
+                    class="upload-btn"
+                >
+                  <el-button size="mini" type="primary">点击上传</el-button>
+                </el-upload>
+                <span style="padding-left: 20px; color: red">上传: 微信支付成功后的截图</span>
+              </div>
             </el-form-item>
             <el-form-item size="large">
               <el-button type="primary" @click="submitForm">提交</el-button>
@@ -241,6 +310,133 @@
     </el-container>
   </div>
 </template>
+
+<script setup>
+import { getFileList, deleteFile } from '@/api/fileUploadAndDownload'
+import { downloadImage } from '@/utils/downloadImg'
+import { useUserStore } from '@/pinia/modules/user'
+import CustomPic from '@/components/customPic/index.vue'
+import UploadImage from '@/components/upload/image.vue'
+import { formatDate } from '@/utils/format'
+
+import { ref } from 'vue'
+import { ElMessage, ElMessageBox } from 'element-plus'
+
+const path = ref(import.meta.env.VITE_BASE_API)
+const userStore = useUserStore()
+
+const imageUrl = ref('')
+
+const page = ref(1)
+const total = ref(0)
+const pageSize = ref(10)
+const tableData = ref([])
+
+// 分页
+const handleSizeChange = (val) => {
+  pageSize.value = val
+  getTableData()
+}
+
+const handleCurrentChange = (val) => {
+  page.value = val
+  getTableData()
+}
+
+// 查询
+const getTableData = async() => {
+  const table = await getFileList({ page: page.value, pageSize: pageSize.value })
+  if (table.code === 0) {
+    tableData.value = table.data.list
+    total.value = table.data.total
+    page.value = table.data.page
+    pageSize.value = table.data.pageSize
+  }
+}
+getTableData()
+
+const deleteFileFunc = async(row) => {
+  ElMessageBox.confirm('此操作将永久文件, 是否继续?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+      .then(async() => {
+        const res = await deleteFile(row)
+        if (res.code === 0) {
+          ElMessage({
+            type: 'success',
+            message: '删除成功!'
+          })
+          if (tableData.value.length === 1 && page.value > 1) {
+            page.value--
+          }
+          getTableData()
+        }
+      })
+      .catch(() => {
+        ElMessage({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+}
+
+const fullscreenLoading = ref(false)
+const checkFile = (file) => {
+  let UID
+  UID = window.localStorage.getItem('UID')
+  if (!UID) {
+    ElMessage.error('请先填写身份证号！')
+    return false
+  }
+  fullscreenLoading.value = true
+  const isJPG = file.type === 'image/jpeg'
+  const isPng = file.type === 'image/png'
+  const isLt2M = file.size / 1024 / 1024 < 0.5
+  if (!isJPG && !isPng) {
+    ElMessage.error('上传图片只能是 jpg或png 格式!')
+    fullscreenLoading.value = false
+  }
+  if (!isLt2M) {
+    ElMessage.error('未压缩未见上传图片大小不能超过 500KB，请使用压缩上传')
+    fullscreenLoading.value = false
+  }
+  return (isPng || isJPG) && isLt2M
+}
+const uploadSuccess = (res) => {
+  fullscreenLoading.value = false
+  if (res.code === 0) {
+    ElMessage({
+      type: 'success',
+      message: '上传成功'
+    })
+    if (res.code === 0) {
+      getTableData()
+    }
+  } else {
+    ElMessage({
+      type: 'warning',
+      message: res.msg
+    })
+  }
+}
+const uploadError = () => {
+  ElMessage({
+    type: 'error',
+    message: '上传失败'
+  })
+  fullscreenLoading.value = false
+}
+const downloadFile = (row) => {
+  if (row.url.indexOf('http://') > -1 || row.url.indexOf('https://') > -1) {
+    downloadImage(row.url, row.name)
+  } else {
+    downloadImage(path.value + row.url, row.name)
+  }
+}
+
+</script>
 
 <script>
 import { createJyxUser } from '@/api/jyxUser'
@@ -320,6 +516,7 @@ export default {
         OCO: undefined,
         OCL: undefined,
         OCN: undefined,
+        payment: 0,
       },
       rules: {
         name: [{
@@ -362,6 +559,11 @@ export default {
           message: '请选择证书领取',
           trigger: 'change'
         }],
+        work: [{
+          required: true,
+          message: '请选择职业',
+          trigger: 'change'
+        }],
         professionalName: [{
           required: true,
           message: '请选择职业名称',
@@ -384,7 +586,6 @@ export default {
           trigger: 'blur'
         }],
         workDate: [],
-        work: [],
         workYear: [],
         nation: [{
           required: true,
@@ -417,6 +618,11 @@ export default {
         OCO: [],
         OCL: [],
         OCN: [],
+        payment: [{
+          required: true,
+          message: '扫码支付不能为空',
+          trigger: 'change'
+        }],
       },
       IDTypeOptions: [{
         'label': '身份证',
@@ -450,20 +656,62 @@ export default {
         'label': '自取',
         'value': 1
       }],
-      professionalNameOptions: [{
-        'label': '保育员',
-        'value': 1
-      }],
-      levelOptions: [{
-        'label': '三级',
+      workOptions: [{
+        'label': '学生',
         'value': 1
       }, {
-        'label': '高级工',
-        'value': '2'
+        'label': '社会人员',
+        'value': 2
+      }],
+      professionalNameOptions: [{
+        'label': '保育员',
+        'value': 1,
+      }, {
+        'label': '普通话',
+        'value': 2
+      }, { 'label': '1+X幼儿照护',
+        'value': 3
+      }],
+      levelOptions: [{
+        'label': '2020',
+        'value': 1
+      }, {
+        'label': '2021',
+        'value': 2
+      }, {
+        'label': '2022',
+        'value': 3
       }],
       conditionOptions: [{
-        'label': '2',
+        'label': '1班',
         'value': 1
+      }, {
+        'label': '2班',
+        'value': 2
+      }, {
+        'label': '3班',
+        'value': 3
+      }, {
+        'label': '4班',
+        'value': 4
+      }, {
+        'label': '5班',
+        'value': 5
+      }, {
+        'label': '6班',
+        'value': 6
+      }, {
+        'label': '7班',
+        'value': 7
+      }, {
+        'label': '8班',
+        'value': 8
+      }, {
+        'label': '9班',
+        'value': 9
+      }, {
+        'label': '10班',
+        'value': 10
       }],
       nationOptions: [{
         'label': '蒙古族',
@@ -474,6 +722,24 @@ export default {
       }, {
         'label': '满族',
         'value': 3
+      }, {
+        'label': '回族',
+        'value': 4
+      }, {
+        'label': '藏族',
+        'value': 5
+      }, {
+        'label': '维吾尔族',
+        'value': 6
+      }, {
+        'label': '苗族',
+        'value': 7
+      }, {
+        'label': '彝族',
+        'value': 8
+      }, {
+        'label': '壮族',
+        'value': 9
       }, {
         'label': '其他',
         'value': 99
@@ -497,11 +763,24 @@ export default {
         'label': '兴安盟',
         'value': 1
       }],
+      paymentOptions: [{
+        'label': '已支付',
+        'value': 1
+      }, {
+        'label': '未支付',
+        'value': 2
+      }],
     }
   },
   computed: {},
-  watch: {},
-  created() { console.log(123) },
+  watch: {
+    'formData.ID':function (data){
+      window.localStorage.setItem('UID', data)
+    },
+  },
+  created() {
+    this.formData.ID = window.localStorage.getItem('UID')
+  },
   mounted() {},
   methods: {
     submitForm() {
@@ -529,12 +808,23 @@ export default {
           this.city = this.provinceCity[key]
         }
       }
-    }
+    },
+    showLevel() {
+      if (this.formData.professionalName === '普通话') {
+        return true
+      } else {
+        return false
+      }
+    },
   }
 }
 </script>
 
 <style scoped>
+.upload-btn+.upload-btn {
+  margin-left: 12px;
+}
+
 /*页面布局*/
 .common-layout .el-header,
 .common-layout .el-footer {

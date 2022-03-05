@@ -2,6 +2,7 @@ package upload
 
 import (
 	"errors"
+	"github.com/gin-gonic/gin"
 	"mime/multipart"
 	"time"
 
@@ -12,7 +13,7 @@ import (
 
 type AliyunOSS struct{}
 
-func (*AliyunOSS) UploadFile(file *multipart.FileHeader) (string, string, error) {
+func (*AliyunOSS) UploadFile(file *multipart.FileHeader, c *gin.Context) (string, string, error) {
 	bucket, err := NewBucket()
 	if err != nil {
 		global.GVA_LOG.Error("function AliyunOSS.NewBucket() Failed", zap.Any("err", err.Error()))

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"mime/multipart"
 	"time"
 
@@ -24,7 +25,7 @@ type Qiniu struct{}
 //@param: file *multipart.FileHeader
 //@return: string, string, error
 
-func (*Qiniu) UploadFile(file *multipart.FileHeader) (string, string, error) {
+func (*Qiniu) UploadFile(file *multipart.FileHeader, c *gin.Context) (string, string, error) {
 	putPolicy := storage.PutPolicy{Scope: global.GVA_CONFIG.Qiniu.Bucket}
 	mac := qbox.NewMac(global.GVA_CONFIG.Qiniu.AccessKey, global.GVA_CONFIG.Qiniu.SecretKey)
 	upToken := putPolicy.UploadToken(mac)

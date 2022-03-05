@@ -1,6 +1,7 @@
 package upload
 
 import (
+	"github.com/gin-gonic/gin"
 	"mime/multipart"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
@@ -10,7 +11,7 @@ import (
 // Author [SliverHorn](https://github.com/SliverHorn)
 // Author [ccfish86](https://github.com/ccfish86)
 type OSS interface {
-	UploadFile(file *multipart.FileHeader) (string, string, error)
+	UploadFile(file *multipart.FileHeader, c *gin.Context) (string, string, error)
 	DeleteFile(key string) error
 }
 

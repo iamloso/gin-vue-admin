@@ -2,6 +2,7 @@ package upload
 
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
+	"github.com/gin-gonic/gin"
 	"github.com/huaweicloud/huaweicloud-sdk-go-obs/obs"
 	"github.com/pkg/errors"
 	"mime/multipart"
@@ -15,7 +16,7 @@ func NewHuaWeiObsClient() (client *obs.ObsClient, err error) {
 	return obs.New(global.GVA_CONFIG.HuaWeiObs.AccessKey, global.GVA_CONFIG.HuaWeiObs.SecretKey, global.GVA_CONFIG.HuaWeiObs.Endpoint)
 }
 
-func (o *_obs) UploadFile(file *multipart.FileHeader) (filename string, filepath string, err error) {
+func (o *_obs) UploadFile(file *multipart.FileHeader, c *gin.Context) (filename string, filepath string, err error) {
 	var open multipart.File
 	open, err = file.Open()
 	if err != nil {
