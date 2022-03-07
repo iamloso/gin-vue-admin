@@ -314,7 +314,7 @@
           </el-scrollbar>
         </el-form>
       </el-main>
-      <el-footer>版权所有© Copyright 2022-2025 北京诗码作集科技有线公司技术支持(电话：18513172626)</el-footer>
+      <el-footer>版权所有© Copyright 2022-2035 北京诗码作集科技有线公司技术支持(电话：18513172626)</el-footer>
     </el-container>
   </div>
 </template>
