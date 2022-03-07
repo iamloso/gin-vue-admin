@@ -7,7 +7,7 @@
       </el-header>
       <el-main>
         <el-form ref="elForm" :model="formData" :rules="rules" size="small" label-width="100px">
-          <el-scrollbar height="800px">
+          <el-scrollbar height="600px">
             <el-form-item label="报名项目" prop="professionalName">
               <el-select
                 v-model="formData.professionalName"
@@ -46,17 +46,17 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item label="证件号" prop="ID">
-              <el-input v-model="formData.ID" placeholder="请输入证件号" clearable :style="{width: '100%'}" />
+            <el-form-item label="证件号" prop="UID">
+              <el-input v-model="formData.UID" placeholder="请输入证件号" clearable :style="{width: '100%'}" @change="getUserByUID"/>
             </el-form-item>
             <el-form-item label="照片" prop="name">
               <div class="gva-btn-list">
                 <el-upload
                     :action="`${path}/fileUploadAndDownload/upload`"
                     :before-upload="checkFile"
-                    :headers="{ 'x-token': userStore.token, 'UID': formData.ID, 'picType': 'userPic' }"
+                    :headers="{ 'x-token': userStore.token, 'UID': formData.UID, 'picType': 'userPic' }"
                     :on-error="uploadError"
-                    :on-success="uploadSuccess"
+                    :on-success="uploadSuccessUserPic"
                     :show-file-list="true"
                     class="upload-btn"
                 >
@@ -112,9 +112,9 @@
                 <el-upload
                     :action="`${path}/fileUploadAndDownload/upload`"
                     :before-upload="checkFile"
-                    :headers="{ 'x-token': userStore.token, 'UID': formData.ID, 'picType': 'userCertify' }"
+                    :headers="{ 'x-token': userStore.token, 'UID': formData.UID, 'picType': 'userCertify' }"
                     :on-error="uploadError"
-                    :on-success="uploadSuccess"
+                    :on-success="uploadSuccessUserCertify"
                     :show-file-list="true"
                     class="upload-btn"
                 >
@@ -198,8 +198,8 @@
                 />
               </el-select>
             </el-form-item>
-            <el-form-item v-if="showLevel()" label="班级" prop="condition">
-              <el-select v-model="formData.condition" placeholder="请选择班级" clearable :style="{width: '100%'}">
+            <el-form-item v-if="showLevel()" label="班级" prop="conditions">
+              <el-select v-model="formData.conditions" placeholder="请选择班级" clearable :style="{width: '100%'}">
                 <el-option
                   v-for="(item, index) in conditionOptions"
                   :key="index"
@@ -273,24 +273,31 @@
             <el-form-item label="">
               <img style="float: left" src="./pay.png" width="180">
             </el-form-item>
-            <el-form-item label="扫码支付" prop="payment">
-              <el-radio-group v-model="formData.payment" size="medium">
+            <el-form-item label="扫码支付" prop="isPay">
+              <el-radio-group v-model="formData.isPay" size="medium">
                 <el-radio
                   v-for="(item, index) in paymentOptions"
                   :key="index"
                   :label="item.value"
+                  :value="item.label"
                   :disabled="item.disabled"
                 >{{ item.label }}</el-radio>
               </el-radio-group>
             </el-form-item>
+            <el-form ref="elForm" :model="formData" :rules="rules" size="small" label-width="100px">
+              <el-form-item label="支付金额" prop="payAmount">
+                <el-input v-model="formData.payAmount" placeholder="请输入金额支付支付金额" clearable :style="{width: '100%'}">
+                </el-input>
+              </el-form-item>
+            </el-form>
             <el-form-item label="支付凭证" prop="name">
               <div class="gva-btn-list">
                 <el-upload
                     :action="`${path}/fileUploadAndDownload/upload`"
                     :before-upload="checkFile"
-                    :headers="{ 'x-token': userStore.token, 'UID': formData.ID, 'picType': 'userPay' }"
+                    :headers="{ 'x-token': userStore.token, 'UID': formData.UID, 'picType': 'userPay' }"
                     :on-error="uploadError"
-                    :on-success="uploadSuccess"
+                    :on-success="uploadSuccessUserPay"
                     :show-file-list="true"
                     class="upload-btn"
                 >
@@ -302,6 +309,7 @@
             <el-form-item size="large">
               <el-button type="primary" @click="submitForm">提交</el-button>
               <el-button @click="resetForm">重置</el-button>
+              <el-button type="primary" @click="printReport">打印报名表</el-button>
             </el-form-item>
           </el-scrollbar>
         </el-form>
@@ -312,12 +320,7 @@
 </template>
 
 <script setup>
-import { getFileList, deleteFile } from '@/api/fileUploadAndDownload'
-import { downloadImage } from '@/utils/downloadImg'
 import { useUserStore } from '@/pinia/modules/user'
-import CustomPic from '@/components/customPic/index.vue'
-import UploadImage from '@/components/upload/image.vue'
-import { formatDate } from '@/utils/format'
 
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -326,61 +329,6 @@ const path = ref(import.meta.env.VITE_BASE_API)
 const userStore = useUserStore()
 
 const imageUrl = ref('')
-
-const page = ref(1)
-const total = ref(0)
-const pageSize = ref(10)
-const tableData = ref([])
-
-// 分页
-const handleSizeChange = (val) => {
-  pageSize.value = val
-  getTableData()
-}
-
-const handleCurrentChange = (val) => {
-  page.value = val
-  getTableData()
-}
-
-// 查询
-const getTableData = async() => {
-  const table = await getFileList({ page: page.value, pageSize: pageSize.value })
-  if (table.code === 0) {
-    tableData.value = table.data.list
-    total.value = table.data.total
-    page.value = table.data.page
-    pageSize.value = table.data.pageSize
-  }
-}
-getTableData()
-
-const deleteFileFunc = async(row) => {
-  ElMessageBox.confirm('此操作将永久文件, 是否继续?', '提示', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  })
-      .then(async() => {
-        const res = await deleteFile(row)
-        if (res.code === 0) {
-          ElMessage({
-            type: 'success',
-            message: '删除成功!'
-          })
-          if (tableData.value.length === 1 && page.value > 1) {
-            page.value--
-          }
-          getTableData()
-        }
-      })
-      .catch(() => {
-        ElMessage({
-          type: 'info',
-          message: '已取消删除'
-        })
-      })
-}
 
 const fullscreenLoading = ref(false)
 const checkFile = (file) => {
@@ -404,7 +352,7 @@ const checkFile = (file) => {
   }
   return (isPng || isJPG) && isLt2M
 }
-const uploadSuccess = (res) => {
+const uploadSuccessUserPic = (res) => {
   fullscreenLoading.value = false
   if (res.code === 0) {
     ElMessage({
@@ -412,7 +360,44 @@ const uploadSuccess = (res) => {
       message: '上传成功'
     })
     if (res.code === 0) {
-      getTableData()
+      window.localStorage.setItem('userPicUrl', res.data.file.url)
+      console.log( window.localStorage.getItem('userPicUrl'))
+    }
+  } else {
+    ElMessage({
+      type: 'warning',
+      message: res.msg
+    })
+  }
+}
+const uploadSuccessUserCertify = (res) => {
+  fullscreenLoading.value = false
+  if (res.code === 0) {
+    ElMessage({
+      type: 'success',
+      message: '上传成功'
+    })
+    if (res.code === 0) {
+      window.localStorage.setItem('userCertifyUrl', res.data.file.url)
+      console.log( window.localStorage.getItem('userCertifyUrl'))
+    }
+  } else {
+    ElMessage({
+      type: 'warning',
+      message: res.msg
+    })
+  }
+}
+const uploadSuccessUserPay = (res) => {
+  fullscreenLoading.value = false
+  if (res.code === 0) {
+    ElMessage({
+      type: 'success',
+      message: '上传成功'
+    })
+    if (res.code === 0) {
+      window.localStorage.setItem('userPayUrl', res.data.file.url)
+      console.log( window.localStorage.getItem('userPayUrl'))
     }
   } else {
     ElMessage({
@@ -428,18 +413,10 @@ const uploadError = () => {
   })
   fullscreenLoading.value = false
 }
-const downloadFile = (row) => {
-  if (row.url.indexOf('http://') > -1 || row.url.indexOf('https://') > -1) {
-    downloadImage(row.url, row.name)
-  } else {
-    downloadImage(path.value + row.url, row.name)
-  }
-}
-
 </script>
 
 <script>
-import { createJyxUser } from '@/api/jyxUser'
+import {createJyxUser, getJyxUserList} from '@/api/jyxUser'
 import { ElMessage } from 'element-plus'
 
 export default {
@@ -485,9 +462,12 @@ export default {
       },
       city: [],
       formData: {
+        // CreatedAt: undefined,
+        // UpdatedAt: undefined,
+        ID: undefined,
         name: undefined,
         IDType: undefined,
-        ID: undefined,
+        UID: undefined,
         sex: undefined,
         dateBirth: null,
         eduLevel: undefined,
@@ -496,7 +476,7 @@ export default {
         professionalName: undefined,
         workType: undefined,
         level: undefined,
-        condition: undefined,
+        conditions: undefined,
         phone: undefined,
         workDate: undefined,
         work: undefined,
@@ -516,7 +496,11 @@ export default {
         OCO: undefined,
         OCL: undefined,
         OCN: undefined,
-        payment: 0,
+        userPic: undefined,
+        userCertify: undefined,
+        userPay: undefined,
+        isPay: undefined,
+        payAmount: undefined,
       },
       rules: {
         name: [{
@@ -529,7 +513,7 @@ export default {
           message: '请输入证件类型',
           trigger: 'change'
         }],
-        ID: [{
+        UID: [{
           required: true,
           message: '请输入证件号',
           trigger: 'blur'
@@ -572,12 +556,12 @@ export default {
         workType: [],
         level: [{
           required: true,
-          message: '请选择级别',
+          message: '请选择年级',
           trigger: 'change'
         }],
-        condition: [{
+        conditions: [{
           required: true,
-          message: '请选择申请条件',
+          message: '请选择班级',
           trigger: 'change'
         }],
         phone: [{
@@ -618,10 +602,15 @@ export default {
         OCO: [],
         OCL: [],
         OCN: [],
-        payment: [{
+        isPay: [{
           required: true,
           message: '扫码支付不能为空',
           trigger: 'change'
+        }],
+        payAmount: [{
+          required: true,
+          message: '请输入金额支付支付金额',
+          trigger: 'blur'
         }],
       },
       IDTypeOptions: [{
@@ -765,21 +754,31 @@ export default {
       }],
       paymentOptions: [{
         'label': '已支付',
-        'value': 1
+        'value': '已支付'
       }, {
         'label': '未支付',
-        'value': 2
+        'value': '未支付'
       }],
     }
   },
   computed: {},
   watch: {
-    'formData.ID':function (data){
+    'formData.UID':function (data){
       window.localStorage.setItem('UID', data)
     },
   },
-  created() {
-    this.formData.ID = window.localStorage.getItem('UID')
+
+  async created() {
+    if (window.localStorage.getItem('UID')) {
+      this.formData.ID = window.localStorage.getItem('UID')
+      const res = await getJyxUserList(JSON.stringify(this.formData))
+      if (res.code === 0 && res.data.list.length > 0) {
+        console.log(res.data.list[0])
+        this.formData = res.data.list[0]
+        // await this.$router.push({ name: 'UploadFile', params: { name: this.formData.name, UID: this.formData.UID }})
+      }
+    }
+
   },
   mounted() {},
   methods: {
@@ -787,13 +786,17 @@ export default {
       this.$refs['elForm'].validate(async valid => {
         if (!valid) return
         // TODO 提交表单
+        this.formData.userPic = window.localStorage.getItem('userPicUrl')
+        this.formData.userCertify = window.localStorage.getItem('userCertifyUrl')
+        this.formData.userPay = window.localStorage.getItem('userPayUrl')
+        this.formData.UID = this.formData.UID.toUpperCase()
         const res = await createJyxUser(JSON.stringify(this.formData))
         if (res.code === 0) {
           ElMessage({
             type: 'success',
             message: '创建/更改成功'
           })
-          await this.$router.push({ name: 'UploadFile', params: { name: this.formData.name, UID: this.formData.ID }})
+          // await this.$router.push({ name: 'UploadFile', params: { name: this.formData.name, UID: this.formData.UID }})
         }
       })
     },
@@ -815,6 +818,27 @@ export default {
       } else {
         return false
       }
+    },
+    async getUserByUID() {
+      const res = await getJyxUserList(JSON.stringify(this.formData))
+      if (res.code === 0 && res.data.list.length > 0) {
+        console.log(res.data.list[0])
+        this.formData = res.data.list[0]
+        // await this.$router.push({ name: 'UploadFile', params: { name: this.formData.name, UID: this.formData.UID }})
+      }
+    },
+    printReport() {
+      let UID
+      UID = window.localStorage.getItem('UID')
+      if (!UID) {
+        ElMessage.error('请先填写身份证号！')
+        return false
+      }
+      if (!this.formData.UID) {
+        ElMessage.error('请先填写身份证号！')
+        return false
+      }
+      this.$router.push({ name: 'Print', params: { name: this.formData.name, UID: this.formData.UID }})
     },
   }
 }

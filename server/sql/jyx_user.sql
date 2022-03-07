@@ -33,6 +33,8 @@ create table gva.jyx_user (
                               OCN varchar(64) comment '原证书编号',
                               userPic varchar(600) comment '用户照片',
                               userCertify varchar(600) comment '学籍在线证明或工作证明',
-                              userPay varchar(600) comment '支付凭证'
+                              userPay varchar(600) comment '支付凭证',
+                              isPay varchar(10) comment '已支付|未支付',
+                              payAmount varchar(30) comment '支付金额'
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 

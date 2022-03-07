@@ -20,9 +20,9 @@ const routes = [{
   component: () => import('@/view/home/home.vue')
 },
 {
-  path: '/uploadFile',
-  name: 'UploadFile',
-  component: () => import('@/view/home/upload.vue')
+  path: '/print',
+  name: 'Print',
+  component: () => import('@/view/home/printReport.vue')
 },
 ]
 

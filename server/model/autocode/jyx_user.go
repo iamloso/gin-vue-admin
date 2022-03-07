@@ -43,6 +43,8 @@ type JyxUser struct {
       UserCertify  string `json:"userCertify" form:"userCertify" gorm:"column:userCertify;comment:学籍在线证明或工作证明;size:600;"`
       UserPic  string `json:"userPic" form:"userPic" gorm:"column:userPic;comment:用户照片;size:600;"`
       UserPay  string `json:"userPay" form:"userPay" gorm:"column:userPay;comment:支付凭证;size:600;"`
+      IsPay  string `json:"isPay" form:"isPay" gorm:"column:isPay;comment:已支付|未支付;size:10;"`
+      PayAmount  string `json:"payAmount" form:"payAmount" gorm:"column:payAmount;comment:支付金额;size:30;"`
 }
 
 

@@ -2,13 +2,14 @@ package autocode
 
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
-    "github.com/flipped-aurora/gin-vue-admin/server/model/autocode"
-    "github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
-    autocodeReq "github.com/flipped-aurora/gin-vue-admin/server/model/autocode/request"
-    "github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
-    "github.com/flipped-aurora/gin-vue-admin/server/service"
-    "github.com/gin-gonic/gin"
-    "go.uber.org/zap"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/autocode"
+	autocodeReq "github.com/flipped-aurora/gin-vue-admin/server/model/autocode/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
+	"github.com/flipped-aurora/gin-vue-admin/server/service"
+	"github.com/gin-gonic/gin"
+	"go.uber.org/zap"
+	"log"
 )
 
 type JyxUserApi struct {
@@ -29,7 +30,24 @@ var jyxUserService = service.ServiceGroupApp.AutoCodeServiceGroup.JyxUserService
 func (jyxUserApi *JyxUserApi) CreateJyxUser(c *gin.Context) {
 	var jyxUser autocode.JyxUser
 	_ = c.ShouldBindJSON(&jyxUser)
-	if err := jyxUserService.CreateJyxUser(jyxUser); err != nil {
+
+	var err error
+	var pageInfo autocodeReq.JyxUserSearch
+	pageInfo.UID = jyxUser.UID
+	pageInfo.ProfessionalName = jyxUser.ProfessionalName
+	if errList, list, total := jyxUserService.GetJyxUserInfoList(pageInfo); errList != nil {
+		global.GVA_LOG.Error("获取失败!", zap.Error(err))
+		response.FailWithMessage("获取失败", c)
+	} else {
+		log.Println(list, total)
+		if total > 0 && jyxUser.ID > 0{
+			err = jyxUserService.UpdateJyxUser(jyxUser)
+		} else {
+			jyxUser.ID = 0
+			err = jyxUserService.CreateJyxUser(jyxUser)
+		}
+	}
+	if err != nil {
         global.GVA_LOG.Error("创建失败!", zap.Error(err))
 		response.FailWithMessage("创建失败", c)
 	} else {

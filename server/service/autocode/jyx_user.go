@@ -3,8 +3,8 @@ package autocode
 import (
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/autocode"
+	autoCodeReq "github.com/flipped-aurora/gin-vue-admin/server/model/autocode/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
-    autoCodeReq "github.com/flipped-aurora/gin-vue-admin/server/model/autocode/request"
 )
 
 type JyxUserService struct {
@@ -52,12 +52,19 @@ func (jyxUserService *JyxUserService)GetJyxUserInfoList(info autoCodeReq.JyxUser
 	offset := info.PageSize * (info.Page - 1)
     // 创建db
 	db := global.GVA_DB.Model(&autocode.JyxUser{})
+	if info.UID != "" {
+		db = db.Where("UID = ?", info.UID)
+	}
+	if info.ProfessionalName != "" {
+		db = db.Where("ProfessionalName = ?", info.ProfessionalName)
+	}
     var jyxUsers []autocode.JyxUser
     // 如果有条件搜索 下方会自动创建搜索语句
 	err = db.Count(&total).Error
 	if err!=nil {
     	return
     }
+
 	err = db.Limit(limit).Offset(offset).Find(&jyxUsers).Error
 	return err, jyxUsers, total
 }
