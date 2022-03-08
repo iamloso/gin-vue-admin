@@ -213,10 +213,9 @@ export default {
   computed: {},
   watch: {},
   async created() {
-    console.log(window.localStorage.getItem('UID'))
-    if (window.localStorage.getItem('UID')) {
-      this.formData.UID = window.localStorage.getItem('UID')
-      const res = await findJyxUser({ UID: this.formData.UID })
+    console.log(this.$route.params.ID)
+    if (this.$route.params.ID) {
+      const res = await findJyxUser({ ID: this.$route.params.ID })
       if (res.code === 0 && res.data.rejyxUser.ID > 0) {
         console.log(res.data.rejyxUser)
         this.formData = res.data.rejyxUser

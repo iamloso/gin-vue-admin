@@ -3,6 +3,7 @@ package example
 import (
 	"errors"
 	"fmt"
+	"github.com/flipped-aurora/gin-vue-admin/server/model/autocode"
 	"strconv"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
@@ -12,19 +13,44 @@ import (
 
 type ExcelService struct{}
 
-func (exa *ExcelService) ParseInfoList2Excel(infoList []system.SysBaseMenu, filePath string) error {
+func (exa *ExcelService) ParseInfoList2Excel(infoList []autocode.JyxUser, filePath string) error {
 	excel := excelize.NewFile()
-	excel.SetSheetRow("Sheet1", "A1", &[]string{"ID", "路由Name", "路由Path", "是否隐藏", "父节点", "排序", "文件名称"})
+	excel.SetSheetRow("Sheet1", "A1", &[]string{"报名项目", "姓名", "手机号", "证件类型", "身份证号", "性别", "民族", "省份", "城市",
+		"所在单位", "出生日期", "文化程度", "考生来源", "证件领取", "职业", "年级", "班级", "参加工作时间",
+		"专业年限", "政治面貌", "学历证书编号", "通讯地址", "邮寄地址", "邮箱", "户籍所在地", "原证书等级",
+		"原证书编号", "原证书职业", "支付金额"})
 	for i, menu := range infoList {
 		axis := fmt.Sprintf("A%d", i+2)
 		excel.SetSheetRow("Sheet1", axis, &[]interface{}{
-			menu.ID,
+			menu.ProfessionalName,
 			menu.Name,
-			menu.Path,
-			menu.Hidden,
-			menu.ParentId,
-			menu.Sort,
-			menu.Component,
+			menu.Phone,
+			menu.IDType,
+			menu.UID,
+			menu.Sex,
+			menu.Nation,
+			menu.Province,
+			menu.City,
+			menu.CurrentUnit,
+			menu.DateBirth,
+			menu.EduLevel,
+			menu.Source,
+			menu.Receive,
+			menu.Work,
+			menu.Level,
+			menu.Conditions,
+			menu.WorkDate,
+			menu.WorkYear,
+			menu.PoliticalStatus,
+			menu.SerialNumber,
+			menu.Address,
+			menu.PostAddress,
+			menu.Email,
+			menu.Place,
+			menu.OCL,
+			menu.OCN,
+			menu.OCO,
+			menu.PayAmount,
 		})
 	}
 	err := excel.SaveAs(filePath)

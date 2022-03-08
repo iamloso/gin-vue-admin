@@ -854,11 +854,12 @@ export default {
       //   ElMessage.error('请先填写身份证号！')
       //   return false
       // }
-      if (!this.formData.UID) {
-        ElMessage.error('请先填写身份证号！')
+      console.log(this.formData.ID)
+      if (!this.formData.ID) {
+        ElMessage.error('请先提交报名信息！')
         return false
       }
-      await this.$router.push({name: 'Print'})
+      await this.$router.push({name: 'Print', params: { ID: this.formData.ID }})
     },
   }
 }

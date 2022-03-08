@@ -2,11 +2,18 @@
   <div>
     <div class="gva-search-box">
       <el-form :inline="true" :model="searchInfo" class="demo-form-inline">
+        <el-form-item label="身份证号">
+          <el-input v-model="searchInfo.UID" placeholder="请输入身份证号" clearable :style="{width: '100%'}"></el-input>
+        </el-form-item>
         <el-form-item>
           <el-button size="mini" type="primary" icon="search" @click="onSubmit">查询</el-button>
           <el-button size="mini" icon="refresh" @click="onReset">重置</el-button>
         </el-form-item>
       </el-form>
+      <div class="gva-btn-list">
+        <el-button class="excel-btn" size="mini" type="primary" icon="download" @click="handleExcelExport('ExcelExport.xlsx')">导出</el-button>
+<!--        <el-button class="excel-btn" size="mini" type="success" icon="download" @click="downloadExcelTemplate()">下载模板</el-button>-->
+      </div>
     </div>
     <div class="gva-table-box">
       <div class="gva-btn-list">
@@ -219,13 +226,33 @@ import {
 
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'
+import { exportExcel, loadExcelData, downloadTemplate } from '@/api/excel'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref } from 'vue'
 
 const path = ref(import.meta.env.VITE_BASE_API)
 
+// const getTableData = async(f = () => {}) => {
+//   const table = await f({ page: page.value, pageSize: pageSize.value })
+//   if (table.code === 0) {
+//     tableData.value = table.data.list
+//     total.value = table.data.total
+//     page.value = table.data.page
+//     pageSize.value = table.data.pageSize
+//   }
+// }
+// getTableData(getJyxUserList)
+
+const handleExcelExport = (fileName) => {
+  if (!fileName || typeof fileName !== 'string') {
+    fileName = 'ExcelExport.xlsx'
+  }
+  exportExcel(tableData.value, fileName)
+}
+
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
+  SUID: '',
   address: '',
   city: '',
   conditions: '',
@@ -264,11 +291,13 @@ const page = ref(1)
 const total = ref(0)
 const pageSize = ref(10)
 const tableData = ref([])
-const searchInfo = ref({})
+const searchInfo = ref({
+  UID: '',
+})
 
 // 重置
 const onReset = () => {
-  searchInfo.value = {}
+  searchInfo.value = { UID: '' }
 }
 
 // 搜索
@@ -460,5 +489,14 @@ const enterDialog = async() => {
 }
 </script>
 
-<style>
+<style lang="scss" scoped>
+.btn-list{
+  display: flex;
+  margin-bottom: 12px;
+  justify-content: flex-end;
+
+}
+.excel-btn+.excel-btn{
+  margin-left: 10px;
+}
 </style>
