@@ -32,23 +32,29 @@ func (jyxUserApi *JyxUserApi) CreateJyxUser(c *gin.Context) {
 	_ = c.ShouldBindJSON(&jyxUser)
 
 	var err error
-	var pageInfo autocodeReq.JyxUserSearch
-	pageInfo.UID = jyxUser.UID
-	pageInfo.ProfessionalName = jyxUser.ProfessionalName
-	if errList, list, total := jyxUserService.GetJyxUserInfoList(pageInfo); errList != nil {
-		global.GVA_LOG.Error("获取失败!", zap.Error(err))
-		response.FailWithMessage("获取失败", c)
-	} else {
-		log.Println(list, total)
-		if total > 0 && jyxUser.ID > 0{
-			err = jyxUserService.UpdateJyxUser(jyxUser)
+	err, data := jyxUserService.GetJyxUserByUIDAndType(jyxUser.UID, jyxUser.ProfessionalName)
+	log.Println(err, data)
+	if err == nil {
+		if data.ID > 0 {
+			jyxUser.ID = data.ID
+			//if jyxUser.UserPay == "" {
+			//	jyxUser.UserPay = data.UserPay
+			//}
+			//if jyxUser.UserPic == "" {
+			//	jyxUser.UserPic = data.UserPic
+			//}
+			//if jyxUser.UserCertify == "" {
+			//	jyxUser.UserCertify = data.UserCertify
+			//}
+			err = jyxUserService.UpdatesJyxUser(jyxUser)
 		} else {
 			jyxUser.ID = 0
 			err = jyxUserService.CreateJyxUser(jyxUser)
+			log.Println(err)
 		}
 	}
 	if err != nil {
-        global.GVA_LOG.Error("创建失败!", zap.Error(err))
+		global.GVA_LOG.Error("创建失败!", zap.Error(err))
 		response.FailWithMessage("创建失败", c)
 	} else {
 		response.OkWithMessage("创建成功", c)
@@ -127,7 +133,15 @@ func (jyxUserApi *JyxUserApi) UpdateJyxUser(c *gin.Context) {
 func (jyxUserApi *JyxUserApi) FindJyxUser(c *gin.Context) {
 	var jyxUser autocode.JyxUser
 	_ = c.ShouldBindQuery(&jyxUser)
-	if err, rejyxUser := jyxUserService.GetJyxUser(jyxUser.ID); err != nil {
+	var err error
+	var rejyxUser autocode.JyxUser
+	if jyxUser.ID > 0 {
+		err, rejyxUser = jyxUserService.GetJyxUser(jyxUser.ID)
+	} else if jyxUser.UID != "" {
+		err, rejyxUser = jyxUserService.GetJyxUserByUID(jyxUser.UID)
+	}
+	log.Println(err, rejyxUser)
+	if err != nil {
         global.GVA_LOG.Error("查询失败!", zap.Error(err))
 		response.FailWithMessage("查询失败", c)
 	} else {

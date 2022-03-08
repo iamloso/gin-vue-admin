@@ -1,6 +1,7 @@
 package autocode
 
 import (
+	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/autocode"
 	autoCodeReq "github.com/flipped-aurora/gin-vue-admin/server/model/autocode/request"
@@ -38,10 +39,25 @@ func (jyxUserService *JyxUserService)UpdateJyxUser(jyxUser autocode.JyxUser) (er
 	return err
 }
 
+func (jyxUserService *JyxUserService)UpdatesJyxUser(jyxUser autocode.JyxUser) (err error) {
+	err = global.GVA_DB.Updates(&jyxUser).Error
+	return err
+}
+
 // GetJyxUser 根据id获取JyxUser记录
 // Author [piexlmax](https://github.com/piexlmax)
 func (jyxUserService *JyxUserService)GetJyxUser(id uint) (err error, jyxUser autocode.JyxUser) {
-	err = global.GVA_DB.Where("id = ?", id).First(&jyxUser).Error
+	err = global.GVA_DB.Where("id = ?", id).Limit(1).Find(&jyxUser).Error
+	return
+}
+
+func (jyxUserService *JyxUserService)GetJyxUserByUID(uid string) (err error, jyxUser autocode.JyxUser) {
+	err = global.GVA_DB.Where("uid = ?", uid).Limit(1).Find(&jyxUser).Error
+	return
+}
+
+func (jyxUserService *JyxUserService)GetJyxUserByUIDAndType(uid , professionalName string) (err error, jyxUser autocode.JyxUser) {
+	err = global.GVA_DB.Where("uid = ? and professionalName = ?", uid, professionalName).Limit(1).Find(&jyxUser).Error
 	return
 }
 
@@ -50,13 +66,14 @@ func (jyxUserService *JyxUserService)GetJyxUser(id uint) (err error, jyxUser aut
 func (jyxUserService *JyxUserService)GetJyxUserInfoList(info autoCodeReq.JyxUserSearch) (err error, list interface{}, total int64) {
 	limit := info.PageSize
 	offset := info.PageSize * (info.Page - 1)
+	fmt.Println(info)
     // 创建db
 	db := global.GVA_DB.Model(&autocode.JyxUser{})
 	if info.UID != "" {
 		db = db.Where("UID = ?", info.UID)
 	}
 	if info.ProfessionalName != "" {
-		db = db.Where("ProfessionalName = ?", info.ProfessionalName)
+		db = db.Where("professionalName = ?", info.ProfessionalName)
 	}
     var jyxUsers []autocode.JyxUser
     // 如果有条件搜索 下方会自动创建搜索语句

@@ -78,8 +78,6 @@ func Routers() *gin.Engine {
 		systemRouter.InitAutoCodeHistoryRouter(PrivateGroup)     // 自动化代码历史
 		systemRouter.InitSysOperationRecordRouter(PrivateGroup)  // 操作记录
 		systemRouter.InitSysDictionaryDetailRouter(PrivateGroup) // 字典详情管理
-
-
 	}
 
 	InstallPlugin(PublicGroup, PrivateGroup) // 安装插件

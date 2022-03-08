@@ -34,40 +34,51 @@
         <el-table-column align="left" label="日期" width="180">
           <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
         </el-table-column>
-        <el-table-column align="left" label="通讯地址" prop="address" width="120" />
+        <el-table-column align="left" label="报名项目" prop="professionalName" width="120" />
+        <el-table-column align="left" label="姓名" prop="name" width="120" />
+        <el-table-column align="left" label="照片" width="180">
+          <template #default="scope">
+            <img style="float: left" :src="`${path}`+'/'+ scope.row.userPic" width="80">
+          </template>
+        </el-table-column>
+        <el-table-column align="left" label="手机号" prop="phone" width="120" />
+        <el-table-column align="left" label="证件类型" prop="IDType" width="120" />
+        <el-table-column align="left" label="身份证号" prop="UID" width="120" />
+        <el-table-column align="left" label="性别" prop="sex" width="120" />
+        <el-table-column align="left" label="民族" prop="nation" width="120" />
+        <el-table-column align="left" label="省份" prop="province" width="120" />
         <el-table-column align="left" label="城市" prop="city" width="120" />
-        <el-table-column align="left" label="申报条件" prop="conditions" width="120" />
         <el-table-column align="left" label="所在单位" prop="currentUnit" width="120" />
         <el-table-column align="left" label="出生日期" prop="dateBirth" width="120" />
         <el-table-column align="left" label="文化程度" prop="eduLevel" width="120" />
-        <el-table-column align="left" label="邮箱" prop="email" width="120" />
+        <el-table-column align="left" label="考生来源" prop="source" width="120" />
+        <el-table-column align="left" label="证件领取" prop="receive" width="120" />
+        <el-table-column align="left" label="职业" prop="work" width="120" />
+        <el-table-column align="left" label="年级" prop="level" width="120" />
+        <el-table-column align="left" label="班级" prop="conditions" width="120" />
+        <el-table-column align="left" label="参加工作时间" prop="workDate" width="120" />
+        <el-table-column align="left" label="专业年限" prop="workYear" width="120" />
+        <el-table-column align="left" label="政治面貌" prop="politicalStatus" width="120" />
+        <el-table-column align="left" label="学历证书编号" prop="serialNumber" width="120" />
         <el-table-column align="left" label="简要经历" prop="experience" width="120" />
-        <el-table-column align="left" label="证件类型" prop="IDType" width="120" />
-        <el-table-column align="left" label="级别" prop="level" width="120" />
-        <el-table-column align="left" label="姓名" prop="name" width="120" />
-        <el-table-column align="left" label="民族" prop="nation" width="120" />
+        <el-table-column align="left" label="通讯地址" prop="address" width="120" />
+        <el-table-column align="left" label="邮寄地址" prop="postAddress" width="120" />
+        <el-table-column align="left" label="邮政编码" prop="postalCode" width="120" />
+        <el-table-column align="left" label="邮箱" prop="email" width="120" />
+        <el-table-column align="left" label="户籍所在地" prop="place" width="120" />
         <el-table-column align="left" label="原证书等级" prop="OCL" width="120" />
         <el-table-column align="left" label="原证书编号" prop="OCN" width="120" />
         <el-table-column align="left" label="原证书职业" prop="OCO" width="120" />
-        <el-table-column align="left" label="手机号" prop="phone" width="120" />
-        <el-table-column align="left" label="户籍所在地" prop="place" width="120" />
-        <el-table-column align="left" label="政治面貌" prop="politicalStatus" width="120" />
-        <el-table-column align="left" label="邮寄地址" prop="postAddress" width="120" />
-        <el-table-column align="left" label="邮政编码" prop="postalCode" width="120" />
-        <el-table-column align="left" label="职业名称" prop="professionalName" width="120" />
-        <el-table-column align="left" label="省份" prop="province" width="120" />
-        <el-table-column align="left" label="证件领取" prop="receive" width="120" />
-        <el-table-column align="left" label="学历证书编号" prop="serialNumber" width="120" />
-        <el-table-column align="left" label="性别" prop="sex" width="120" />
-        <el-table-column align="left" label="考生来源" prop="source" width="120" />
-        <el-table-column align="left" label="身份证号" prop="UID" width="120" />
-        <el-table-column align="left" label="从事专业" prop="work" width="120" />
-        <el-table-column align="left" label="参加工作时间" prop="workDate" width="120" />
-        <el-table-column align="left" label="工种名称" prop="workType" width="120" />
-        <el-table-column align="left" label="专业年限" prop="workYear" width="120" />
+        <el-table-column align="left" label="扫描支付" prop="isPay" width="120" />
+        <el-table-column align="left" label="支付金额" prop="payAmount" width="120" />
+        <el-table-column align="left" label="支付凭证" width="180">
+          <template #default="scope">
+            <img style="float: left" :src="`${path}`+'/'+ scope.row.userPay" width="80">
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="按钮组">
           <template #default="scope">
-            <el-button type="text" icon="edit" size="small" class="table-button" @click="updateJyxUserFunc(scope.row)">变更</el-button>
+<!--            <el-button type="text" icon="edit" size="small" class="table-button" @click="updateJyxUserFunc(scope.row)">变更</el-button>-->
             <el-button type="text" icon="delete" size="mini" @click="deleteRow(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -210,6 +221,8 @@ import {
 import { getDictFunc, formatDate, formatBoolean, filterDict } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { ref } from 'vue'
+
+const path = ref(import.meta.env.VITE_BASE_API)
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({

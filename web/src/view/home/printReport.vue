@@ -48,7 +48,7 @@ const path = ref(import.meta.env.VITE_BASE_API)
 </script>
 
 <script>
-import { getJyxUserList } from '@/api/jyxUser'
+import { findJyxUser } from '@/api/jyxUser'
 
 export default {
   name: 'Home',
@@ -213,12 +213,13 @@ export default {
   computed: {},
   watch: {},
   async created() {
+    console.log(window.localStorage.getItem('UID'))
     if (window.localStorage.getItem('UID')) {
-      this.formData.ID = window.localStorage.getItem('UID')
-      const res = await getJyxUserList(JSON.stringify(this.formData))
-      if (res.code === 0 && res.data.list.length > 0) {
-        console.log(res.data.list[0])
-        this.formData = res.data.list[0]
+      this.formData.UID = window.localStorage.getItem('UID')
+      const res = await findJyxUser({ UID: this.formData.UID })
+      if (res.code === 0 && res.data.rejyxUser.ID > 0) {
+        console.log(res.data.rejyxUser)
+        this.formData = res.data.rejyxUser
         // await this.$router.push({ name: 'UploadFile', params: { name: this.formData.name, UID: this.formData.UID }})
       }
     }

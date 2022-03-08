@@ -39,7 +39,12 @@ func (*Local) UploadFile(file *multipart.FileHeader, c *gin.Context) (string, st
 	if picType != "" {
 		filePath = global.GVA_CONFIG.Local.Path + "/" + picType
 		if UID != "" && (picType == "userPic" || picType == "userPay") {
-			filename = UID + ext
+			if picType == "userPic" {
+				filename = UID + ext
+			}
+			if picType == "userPay" {
+				filename = UID + "_" + time.Now().Format("20060102150405") + ext
+			}
 		} else {
 			filename = name + "_" + time.Now().Format("20060102150405") + ext
 		}

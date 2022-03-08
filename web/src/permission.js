@@ -5,7 +5,7 @@ import router from '@/router'
 
 let asyncRouterFlag = 0
 
-const whiteList = ['Login', 'Init', 'Home', 'UploadFile']
+const whiteList = ['Login', 'Init', 'Home', 'UploadFile', 'Print']
 
 const getRouter = async(userStore) => {
   const routerStore = useRouterStore()
@@ -41,7 +41,7 @@ router.beforeEach(async(to, from, next) => {
   // 在白名单中的判断情况
   document.title = getPageTitle(to.meta.title)
   if (whiteList.indexOf(to.name) > -1) {
-    if (token && to.name !== 'Home' && to.name !== 'UploadFile') {
+    if (token && to.name !== 'Home' && to.name !== 'UploadFile' && to.name !== 'Print') {
       if (!asyncRouterFlag && whiteList.indexOf(from.name) < 0) {
         asyncRouterFlag++
         await getRouter(userStore)

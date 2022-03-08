@@ -8,7 +8,7 @@
       <el-main>
         <el-form ref="elForm" :model="formData" :rules="rules" size="small" label-width="100px">
           <el-scrollbar height="600px">
-            <el-form-item label="报名项目" prop="professionalName">
+            <el-form-item label="报名项目" prop="professionalName" @change="changeProfessionalName">
               <el-select
                 v-model="formData.professionalName"
                 placeholder="请选择报名"
@@ -57,7 +57,7 @@
                     :headers="{ 'x-token': userStore.token, 'UID': formData.UID, 'picType': 'userPic' }"
                     :on-error="uploadError"
                     :on-success="uploadSuccessUserPic"
-                    :show-file-list="true"
+                    :show-file-list="false"
                     class="upload-btn"
                 >
                   <el-button size="mini" type="primary">点击上传</el-button>
@@ -115,7 +115,7 @@
                     :headers="{ 'x-token': userStore.token, 'UID': formData.UID, 'picType': 'userCertify' }"
                     :on-error="uploadError"
                     :on-success="uploadSuccessUserCertify"
-                    :show-file-list="true"
+                    :show-file-list="false"
                     class="upload-btn"
                 >
                   <el-button size="mini" type="primary">点击上传</el-button>
@@ -298,7 +298,7 @@
                     :headers="{ 'x-token': userStore.token, 'UID': formData.UID, 'picType': 'userPay' }"
                     :on-error="uploadError"
                     :on-success="uploadSuccessUserPay"
-                    :show-file-list="true"
+                    :show-file-list="false"
                     class="upload-btn"
                 >
                   <el-button size="mini" type="primary">点击上传</el-button>
@@ -416,7 +416,7 @@ const uploadError = () => {
 </script>
 
 <script>
-import {createJyxUser, getJyxUserList} from '@/api/jyxUser'
+import {createJyxUser, getJyxUserList, findJyxUser} from '@/api/jyxUser'
 import { ElMessage } from 'element-plus'
 
 export default {
@@ -763,18 +763,19 @@ export default {
   },
   computed: {},
   watch: {
-    'formData.UID':function (data){
-      window.localStorage.setItem('UID', data)
-    },
+    // 'formData.UID':function (data){
+    //   window.localStorage.setItem('UID', data)
+    // },
   },
 
   async created() {
+    console.log(window.localStorage.getItem('UID'))
     if (window.localStorage.getItem('UID')) {
-      this.formData.ID = window.localStorage.getItem('UID')
-      const res = await getJyxUserList(JSON.stringify(this.formData))
-      if (res.code === 0 && res.data.list.length > 0) {
-        console.log(res.data.list[0])
-        this.formData = res.data.list[0]
+      this.formData.UID = window.localStorage.getItem('UID')
+      const res = await findJyxUser({ UID: this.formData.UID})
+      if (res.code === 0 && res.data.rejyxUser.ID > 0) {
+        console.log(res.data.rejyxUser)
+        this.formData = res.data.rejyxUser
         // await this.$router.push({ name: 'UploadFile', params: { name: this.formData.name, UID: this.formData.UID }})
       }
     }
@@ -789,6 +790,7 @@ export default {
         this.formData.userPic = window.localStorage.getItem('userPicUrl')
         this.formData.userCertify = window.localStorage.getItem('userCertifyUrl')
         this.formData.userPay = window.localStorage.getItem('userPayUrl')
+        console.log(this.formData.userPay)
         this.formData.UID = this.formData.UID.toUpperCase()
         const res = await createJyxUser(JSON.stringify(this.formData))
         if (res.code === 0) {
@@ -796,9 +798,24 @@ export default {
             type: 'success',
             message: '创建/更改成功'
           })
+          window.localStorage.removeItem('UID')
+          window.localStorage.removeItem('userPicUrl')
+          window.localStorage.removeItem('userCertifyUrl')
+          window.localStorage.removeItem('userPayUrl')
+          //localStorage.clear()
+          window.localStorage.setItem('UID', this.formData.UID)
+          //this.formData = null
           // await this.$router.push({ name: 'UploadFile', params: { name: this.formData.name, UID: this.formData.UID }})
         }
       })
+    },
+    changeProfessionalName() {
+       window.localStorage.removeItem('userCertifyUrl')
+       window.localStorage.removeItem('userPayUrl')
+       window.localStorage.removeItem('userPicUrl')
+       this.formData.userCertify = ""
+       this.formData.userPic = ""
+       this.formData.userPay = ""
     },
     resetForm() {
       this.$refs['elForm'].resetFields()
@@ -820,25 +837,28 @@ export default {
       }
     },
     async getUserByUID() {
-      const res = await getJyxUserList(JSON.stringify(this.formData))
-      if (res.code === 0 && res.data.list.length > 0) {
-        console.log(res.data.list[0])
-        this.formData = res.data.list[0]
+      console.log(this.formData.UID)
+      this.formData.UID = this.formData.UID.toUpperCase()
+      window.localStorage.setItem('UID', this.formData.UID)
+      const res = await findJyxUser({ UID: this.formData.UID})
+      if (res.code === 0 && res.data.rejyxUser.ID > 0) {
+        console.log(res.data.rejyxUser)
+        this.formData = res.data.rejyxUser
         // await this.$router.push({ name: 'UploadFile', params: { name: this.formData.name, UID: this.formData.UID }})
       }
     },
-    printReport() {
-      let UID
-      UID = window.localStorage.getItem('UID')
-      if (!UID) {
-        ElMessage.error('请先填写身份证号！')
-        return false
-      }
+    async printReport() {
+      // let UID
+      // UID = window.localStorage.getItem('UID')
+      // if (!UID) {
+      //   ElMessage.error('请先填写身份证号！')
+      //   return false
+      // }
       if (!this.formData.UID) {
         ElMessage.error('请先填写身份证号！')
         return false
       }
-      this.$router.push({ name: 'Print', params: { name: this.formData.name, UID: this.formData.UID }})
+      await this.$router.push({name: 'Print'})
     },
   }
 }
