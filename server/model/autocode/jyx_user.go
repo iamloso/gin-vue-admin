@@ -45,6 +45,7 @@ type JyxUser struct {
       UserPay  string `json:"userPay" form:"userPay" gorm:"column:userPay;comment:支付凭证;size:600;"`
       IsPay  string `json:"isPay" form:"isPay" gorm:"column:isPay;comment:已支付|未支付;size:10;"`
       PayAmount  string `json:"payAmount" form:"payAmount" gorm:"column:payAmount;comment:支付金额;size:30;"`
+      Verify  *int `json:"verify" form:"verify" gorm:"column:verify;comment:1:审核通过|2：未通过;size:10;"`
 }
 
 

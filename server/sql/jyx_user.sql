@@ -38,3 +38,4 @@ create table gva.jyx_user (
                               payAmount varchar(30) comment '支付金额'
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+alter table gva.jyx_user add verify int default 2 comment '1:审核通过|2：未通过' after payAmount;

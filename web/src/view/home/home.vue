@@ -271,10 +271,10 @@
             <el-form-item label="原证书编号" prop="OCN">
               <el-input v-model="formData.OCN" placeholder="请输入原证书编号" clearable :style="{width: '100%'}" />
             </el-form-item>
-            <el-form-item label="" v-if="false">
+            <el-form-item label="" v-if="formData.verify===1">
               <img style="float: left" src="./pay.png" width="180">
             </el-form-item>
-            <el-form-item label="扫码支付" prop="isPay" v-if="false">
+            <el-form-item label="扫码支付" prop="isPay" v-if="formData.verify===1">
               <el-radio-group v-model="formData.isPay" size="medium">
                 <el-radio
                   v-for="(item, index) in paymentOptions"
@@ -285,11 +285,11 @@
                 >{{ item.label }}</el-radio>
               </el-radio-group>
             </el-form-item>
-              <el-form-item label="支付金额" prop="payAmount" v-if="false">
+              <el-form-item label="支付金额" prop="payAmount" v-if="formData.verify===1">
                 <el-input v-model="formData.payAmount" placeholder="请输入金额支付支付金额" clearable :style="{width: '100%'}">
                 </el-input>
               </el-form-item>
-            <el-form-item label="支付凭证" prop="name" v-if="false">
+            <el-form-item label="支付凭证" prop="name" v-if="formData.verify===1">
               <div class="gva-btn-list">
                 <el-upload
                     :action="`${path}/fileUploadAndDownload/upload`"
@@ -500,6 +500,7 @@ export default {
         userPay: undefined,
         isPay: undefined,
         payAmount: undefined,
+        verify:undefined,
       },
       rules: {
         name: [{

@@ -12,7 +12,9 @@
       </el-form>
       <div class="gva-btn-list">
         <el-button class="excel-btn" size="mini" type="primary" icon="download" @click="handleExcelExport('ExcelExport.xlsx')">导出</el-button>
-        <el-button class="excel-btn" size="mini" type="success" icon="download" @click="downloadExcelTemplate()">下载</el-button>
+        <el-button class="excel-btn" size="mini" type="success" icon="download" @click="downloadUserPic()">下载图片</el-button>
+        <el-button class="excel-btn" size="mini" type="success" icon="download" @click="downloadUserCeritify()">下载证明</el-button>
+        <el-button class="excel-btn" size="mini" type="success" icon="download" @click="downloadUserPay()">下载支付凭证</el-button>
       </div>
     </div>
     <div class="gva-table-box">
@@ -42,7 +44,12 @@
           <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
         </el-table-column>
         <el-table-column align="left" label="报名项目" prop="professionalName" width="120" />
-        <el-table-column align="left" label="姓名" prop="name" width="120" />
+          <el-table-column align="left" label="姓名" width="180">
+            <template #default="scope">
+              {{ scope.row.name }}
+              <el-button type="text" icon="edit" size="small" class="table-button" @click="updateJyxUserFunc(scope.row)">审核</el-button>
+            </template>
+          </el-table-column>
         <el-table-column align="left" label="照片" width="180">
           <template #default="scope">
             <img style="float: left" :src="`${path}`+'/'+ scope.row.userPic" width="80">
@@ -102,100 +109,32 @@
         />
       </div>
     </div>
-    <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" title="弹窗操作">
+    <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" title="资料审核">
       <el-form :model="formData" label-position="right" label-width="80px">
-        <el-form-item label="通讯地址:">
-          <el-input v-model="formData.address" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="城市:">
-          <el-input v-model="formData.city" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="申报条件:">
-          <el-input v-model="formData.conditions" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="所在单位:">
-          <el-input v-model="formData.currentUnit" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="出生日期:">
-          <el-input v-model="formData.dateBirth" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="文化程度:">
-          <el-input v-model="formData.eduLevel" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="邮箱:">
-          <el-input v-model="formData.email" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="简要经历:">
-          <el-input v-model="formData.experience" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="证件类型:">
-          <el-input v-model="formData.IDType" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="级别:">
-          <el-input v-model="formData.level" clearable placeholder="请输入" />
-        </el-form-item>
         <el-form-item label="姓名:">
-          <el-input v-model="formData.name" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="民族:">
-          <el-input v-model="formData.nation" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="原证书等级:">
-          <el-input v-model="formData.OCL" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="原证书编号:">
-          <el-input v-model="formData.OCN" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="原证书职业:">
-          <el-input v-model="formData.OCO" clearable placeholder="请输入" />
+          {{ formData.name }}
         </el-form-item>
         <el-form-item label="手机号:">
-          <el-input v-model="formData.phone" clearable placeholder="请输入" />
+          {{ formData.phone}}
         </el-form-item>
-        <el-form-item label="户籍所在地:">
-          <el-input v-model="formData.place" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="政治面貌:">
-          <el-input v-model="formData.politicalStatus" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="邮寄地址:">
-          <el-input v-model="formData.postAddress" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="邮政编码:">
-          <el-input v-model="formData.postalCode" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="职业名称:">
-          <el-input v-model="formData.professionalName" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="省份:">
-          <el-input v-model="formData.province" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="证件领取:">
-          <el-input v-model="formData.receive" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="学历证书编号:">
-          <el-input v-model="formData.serialNumber" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="性别:">
-          <el-input v-model="formData.sex" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="考生来源:">
-          <el-input v-model="formData.source" clearable placeholder="请输入" />
+        <el-form-item label="报名项目:">
+          {{ formData.professionalName}}
         </el-form-item>
         <el-form-item label="身份证号:">
-          <el-input v-model="formData.UID" clearable placeholder="请输入" />
+          {{ formData.UID}}
         </el-form-item>
-        <el-form-item label="从事专业:">
-          <el-input v-model="formData.work" clearable placeholder="请输入" />
+        <el-form-item label="证明材料:">
+            <img style="float: left" :src="`${path}`+'/'+ formData.userCertify" width="480">
         </el-form-item>
-        <el-form-item label="参加工作时间:">
-          <el-input v-model="formData.workDate" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="工种名称:">
-          <el-input v-model="formData.workType" clearable placeholder="请输入" />
-        </el-form-item>
-        <el-form-item label="专业年限:">
-          <el-input v-model="formData.workYear" clearable placeholder="请输入" />
+        <el-form-item label="审核:">
+          <el-radio-group v-model="formData.verify" size="medium">
+            <el-radio
+                v-for="(item, index) in verifyOptions"
+                :key="index"
+                :label="item.value"
+                :value="item.value"
+            >{{ item.label }}</el-radio>
+          </el-radio-group>
         </el-form-item>
       </el-form>
       <template #footer>
@@ -252,7 +191,8 @@ const handleExcelExport = (fileName) => {
 
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
-  SUID: '',
+  verify: null,
+  userCertify: '',
   address: '',
   city: '',
   conditions: '',
@@ -285,6 +225,13 @@ const formData = ref({
   workType: '',
   workYear: '',
 })
+const verifyOptions = ref([{
+  'label': '通过',
+  'value': 1
+}, {
+  'label': '未通过',
+  'value': 2
+}])
 
 // =========== 表格控制部分 ===========
 const page = ref(1)
@@ -313,9 +260,16 @@ const handleSizeChange = (val) => {
   getTableData()
 }
 
-const downloadExcelTemplate = () => {
-  // downloadTemplate('ExcelTemplate.xlsx')
-  downloadTemplate('userPic.tar.gz')
+const downloadUserPic = () => {
+  downloadTemplate('userPic.zip', 'userPic')
+}
+
+const downloadUserCeritify = () => {
+  downloadTemplate('userCertify.zip', 'userCertify')
+}
+
+const downloadUserPay = () => {
+  downloadTemplate('userPay.zip', 'userPay')
 }
 
 // 修改页面容量

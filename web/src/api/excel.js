@@ -71,12 +71,13 @@ export const loadExcelData = () => {
 // @Param fileName query fileName true "模板名称"
 // @Success 200
 // @Router /excel/downloadTemplate [get]
-export const downloadTemplate = (fileName) => {
+export const downloadTemplate = (fileName, fileType) => {
   return service({
     url: '/excel/downloadTemplate',
     method: 'get',
     params: {
-      fileName: fileName
+      fileName: fileName,
+      fileType: fileType
     },
     responseType: 'blob'
   }).then((res) => {
