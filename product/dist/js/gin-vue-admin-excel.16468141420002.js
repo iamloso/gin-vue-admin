@@ -1,0 +1,4 @@
+/*! 
+ Build based on gin-vue-admin 
+ Time : 1646814142000 */
+import{s as e}from"../gva/gin-vue-admin-index.1646814142000.js";import{d as o}from"./gin-vue-admin-vendor.1646814142000.js";const a=(e,a)=>{if(void 0!==e.data){if("application/json"===e.data.type){const a=new FileReader;a.onload=function(){const e=JSON.parse(a.result).msg;o({showClose:!0,message:e,type:"error"})},a.readAsText(new Blob([e.data]))}}else{var t=window.URL.createObjectURL(new Blob([e])),n=document.createElement("a");n.style.display="none",n.href=t,n.download=a;var s=new MouseEvent("click");n.dispatchEvent(s)}},t=(o,t)=>{e({url:"/excel/exportExcel",method:"post",data:{fileName:t,infoList:o},responseType:"blob"}).then((e=>{a(e,t)}))},n=()=>e({url:"/excel/loadExcel",method:"get"}),s=(o,t)=>e({url:"/excel/downloadTemplate",method:"get",params:{fileName:o,fileType:t},responseType:"blob"}).then((e=>{a(e,o)}));export{s as d,t as e,n as l};
