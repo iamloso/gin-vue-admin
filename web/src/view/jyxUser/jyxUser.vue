@@ -12,7 +12,7 @@
       </el-form>
       <div class="gva-btn-list">
         <el-button class="excel-btn" size="mini" type="primary" icon="download" @click="handleExcelExport('ExcelExport.xlsx')">导出</el-button>
-<!--        <el-button class="excel-btn" size="mini" type="success" icon="download" @click="downloadExcelTemplate()">下载模板</el-button>-->
+        <el-button class="excel-btn" size="mini" type="success" icon="download" @click="downloadExcelTemplate()">下载</el-button>
       </div>
     </div>
     <div class="gva-table-box">
@@ -311,6 +311,11 @@ const onSubmit = () => {
 const handleSizeChange = (val) => {
   pageSize.value = val
   getTableData()
+}
+
+const downloadExcelTemplate = () => {
+  // downloadTemplate('ExcelTemplate.xlsx')
+  downloadTemplate('userPic.tar.gz')
 }
 
 // 修改页面容量

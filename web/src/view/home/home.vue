@@ -8,13 +8,14 @@
       <el-main>
         <el-form ref="elForm" :model="formData" :rules="rules" size="small" label-width="100px">
           <el-scrollbar height="600px">
-            <el-form-item label="报名项目" prop="professionalName" @change="changeProfessionalName">
+            <el-form-item label="报名项目" prop="professionalName">
               <el-select
                 v-model="formData.professionalName"
                 placeholder="请选择报名"
                 clearable
                 :style="{width: '100%'}"
-              >
+                @change="changeProfessionalName">
+
                 <el-option
                   v-for="(item, index) in professionalNameOptions"
                   :key="index"
@@ -270,10 +271,10 @@
             <el-form-item label="原证书编号" prop="OCN">
               <el-input v-model="formData.OCN" placeholder="请输入原证书编号" clearable :style="{width: '100%'}" />
             </el-form-item>
-            <el-form-item label="">
+            <el-form-item label="" v-if="false">
               <img style="float: left" src="./pay.png" width="180">
             </el-form-item>
-            <el-form-item label="扫码支付" prop="isPay">
+            <el-form-item label="扫码支付" prop="isPay" v-if="false">
               <el-radio-group v-model="formData.isPay" size="medium">
                 <el-radio
                   v-for="(item, index) in paymentOptions"
@@ -284,13 +285,11 @@
                 >{{ item.label }}</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form ref="elForm" :model="formData" :rules="rules" size="small" label-width="100px">
-              <el-form-item label="支付金额" prop="payAmount">
+              <el-form-item label="支付金额" prop="payAmount" v-if="false">
                 <el-input v-model="formData.payAmount" placeholder="请输入金额支付支付金额" clearable :style="{width: '100%'}">
                 </el-input>
               </el-form-item>
-            </el-form>
-            <el-form-item label="支付凭证" prop="name">
+            <el-form-item label="支付凭证" prop="name" v-if="false">
               <div class="gva-btn-list">
                 <el-upload
                     :action="`${path}/fileUploadAndDownload/upload`"
@@ -769,10 +768,10 @@ export default {
   },
 
   async created() {
-    console.log(window.localStorage.getItem('UID'))
-    if (window.localStorage.getItem('UID')) {
+    console.log(window.localStorage.getItem('UID'), window.localStorage.getItem('professionalName'))
+    if (window.localStorage.getItem('UID') && window.localStorage.getItem('professionalName')) {
       this.formData.UID = window.localStorage.getItem('UID')
-      const res = await findJyxUser({ UID: this.formData.UID})
+      const res = await findJyxUser({ UID: this.formData.UID, professionalName: window.localStorage.getItem('professionalName')})
       if (res.code === 0 && res.data.rejyxUser.ID > 0) {
         console.log(res.data.rejyxUser)
         this.formData = res.data.rejyxUser
@@ -810,12 +809,17 @@ export default {
       })
     },
     changeProfessionalName() {
+       console.log('aaaaaaa')
+       window.localStorage.setItem('professionalName', this.formData.professionalName)
        window.localStorage.removeItem('userCertifyUrl')
        window.localStorage.removeItem('userPayUrl')
        window.localStorage.removeItem('userPicUrl')
        this.formData.userCertify = ""
        this.formData.userPic = ""
        this.formData.userPay = ""
+       console.log(this.formData.ID)
+       this.formData.ID = ""
+       console.log(this.formData.ID)
     },
     resetForm() {
       this.$refs['elForm'].resetFields()
@@ -840,7 +844,7 @@ export default {
       console.log(this.formData.UID)
       this.formData.UID = this.formData.UID.toUpperCase()
       window.localStorage.setItem('UID', this.formData.UID)
-      const res = await findJyxUser({ UID: this.formData.UID})
+      const res = await findJyxUser({ UID: this.formData.UID, professionalName: this.formData.professionalName})
       if (res.code === 0 && res.data.rejyxUser.ID > 0) {
         console.log(res.data.rejyxUser)
         this.formData = res.data.rejyxUser

@@ -88,7 +88,7 @@ func (e *ExcelApi) LoadExcel(c *gin.Context) {
 // @Router /excel/downloadTemplate [get]
 func (e *ExcelApi) DownloadTemplate(c *gin.Context) {
 	fileName := c.Query("fileName")
-	filePath := global.GVA_CONFIG.Excel.Dir + fileName
+	filePath := global.GVA_CONFIG.Excel.UserPic+ fileName
 	ok, err := utils.PathExists(filePath)
 	if !ok || err != nil {
 		global.GVA_LOG.Error("文件不存在!", zap.Error(err))

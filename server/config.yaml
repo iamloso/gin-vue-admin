@@ -71,6 +71,7 @@ email:
   nickname: test
 excel:
   dir: ./resource/excel/
+  userPic: ./uploads/file/
 hua-wei-obs:
   path: you-path
   bucket: you-bucket

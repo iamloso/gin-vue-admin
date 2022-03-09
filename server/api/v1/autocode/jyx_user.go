@@ -137,8 +137,8 @@ func (jyxUserApi *JyxUserApi) FindJyxUser(c *gin.Context) {
 	var rejyxUser autocode.JyxUser
 	if jyxUser.ID > 0 {
 		err, rejyxUser = jyxUserService.GetJyxUser(jyxUser.ID)
-	} else if jyxUser.UID != "" {
-		err, rejyxUser = jyxUserService.GetJyxUserByUID(jyxUser.UID)
+	} else if jyxUser.UID != "" && jyxUser.ProfessionalName != "" {
+		err, rejyxUser = jyxUserService.GetJyxUserByUIDAndType(jyxUser.UID, jyxUser.ProfessionalName)
 	}
 	log.Println(err, rejyxUser)
 	if err != nil {

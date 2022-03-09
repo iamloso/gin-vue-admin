@@ -71,6 +71,7 @@ export default ({
       manifest: false, // 是否产出maifest.json
       sourcemap: false, // 是否产出soucemap.json
       outDir: 'dist', // 产出目录
+      chunkSizeWarningLimit: '1000',
       rollupOptions,
     },
     esbuild,
