@@ -254,6 +254,9 @@ const verifyOptions = ref([{
 }, {
   'label': '未通过',
   'value': 2
+}, {
+  'label': '未审核',
+  'value': 99
 }])
 
 // =========== 表格控制部分 ===========

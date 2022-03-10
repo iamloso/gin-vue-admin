@@ -34,6 +34,9 @@
             <el-form-item label="支付凭证" prop="name">
               <img style="float: left" :src="`${path}`+'/'+formData.userPay" width="80">
             </el-form-item>
+            <el-form-item label="证明" prop="name">
+              <img style="float: left" :src="`${path}`+'/'+formData.userCertify" width="80">
+            </el-form-item>
           </el-scrollbar>
         </el-form>
       </el-main>

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/autocode"
 	"strconv"
+	"strings"
 
 	"github.com/flipped-aurora/gin-vue-admin/server/global"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/system"
@@ -21,6 +22,11 @@ func (exa *ExcelService) ParseInfoList2Excel(infoList []autocode.JyxUser, filePa
 		"原证书编号", "原证书职业", "支付金额"})
 	for i, menu := range infoList {
 		axis := fmt.Sprintf("A%d", i+2)
+		var birth string
+		birthArr := strings.Split(menu.DateBirth, "T")
+		if len(birthArr) > 0 {
+			birth = birthArr[0]
+		}
 		excel.SetSheetRow("Sheet1", axis, &[]interface{}{
 			menu.ProfessionalName,
 			menu.Name,
@@ -32,7 +38,7 @@ func (exa *ExcelService) ParseInfoList2Excel(infoList []autocode.JyxUser, filePa
 			menu.Province,
 			menu.City,
 			menu.CurrentUnit,
-			menu.DateBirth,
+			birth,
 			menu.EduLevel,
 			menu.Source,
 			menu.Receive,
