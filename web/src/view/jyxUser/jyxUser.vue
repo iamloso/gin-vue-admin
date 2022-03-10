@@ -2,8 +2,21 @@
   <div>
     <div class="gva-search-box">
       <el-form :inline="true" :model="searchInfo" class="demo-form-inline">
+        <el-form-item label="姓名">
+          <el-input v-model="searchInfo.name" placeholder="请输入姓名" clearable :style="{width: '100%'}" />
+        </el-form-item>
         <el-form-item label="身份证号">
-          <el-input v-model="searchInfo.UID" placeholder="请输入身份证号" clearable :style="{width: '100%'}"></el-input>
+          <el-input v-model="searchInfo.UID" placeholder="请输入身份证号" clearable :style="{width: '100%'}" />
+        </el-form-item>
+        <el-form-item label="审核" prop="nation">
+          <el-select v-model="searchInfo.verify" placeholder="请选择审核状态" clearable :style="{width: '100%'}">
+            <el-option
+              v-for="(item, index) in verifyOptions"
+              :key="index"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button size="mini" type="primary" icon="search" @click="onSubmit">查询</el-button>
@@ -44,12 +57,12 @@
           <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
         </el-table-column>
         <el-table-column align="left" label="报名项目" prop="professionalName" width="120" />
-          <el-table-column align="left" label="姓名" width="180">
-            <template #default="scope">
-              {{ scope.row.name }}
-              <el-button type="text" icon="edit" size="small" class="table-button" @click="updateJyxUserFunc(scope.row)">审核</el-button>
-            </template>
-          </el-table-column>
+        <el-table-column align="left" label="姓名" width="180">
+          <template #default="scope">
+            {{ scope.row.name }}
+            <el-button type="text" icon="edit" size="small" class="table-button" @click="updateJyxUserFunc(scope.row)">审核</el-button>
+          </template>
+        </el-table-column>
         <el-table-column align="left" label="照片" width="180">
           <template #default="scope">
             <img style="float: left" :src="`${path}`+'/'+ scope.row.userPic" width="80">
@@ -92,7 +105,7 @@
         </el-table-column>
         <el-table-column align="left" label="按钮组">
           <template #default="scope">
-<!--            <el-button type="text" icon="edit" size="small" class="table-button" @click="updateJyxUserFunc(scope.row)">变更</el-button>-->
+            <!--            <el-button type="text" icon="edit" size="small" class="table-button" @click="updateJyxUserFunc(scope.row)">变更</el-button>-->
             <el-button type="text" icon="delete" size="mini" @click="deleteRow(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -115,26 +128,35 @@
           {{ formData.name }}
         </el-form-item>
         <el-form-item label="手机号:">
-          {{ formData.phone}}
+          {{ formData.phone }}
         </el-form-item>
         <el-form-item label="报名项目:">
-          {{ formData.professionalName}}
+          {{ formData.professionalName }}
         </el-form-item>
         <el-form-item label="身份证号:">
-          {{ formData.UID}}
+          {{ formData.UID }}
         </el-form-item>
         <el-form-item label="证明材料:">
-            <img style="float: left" :src="`${path}`+'/'+ formData.userCertify" width="480">
+          <img style="float: left" :src="`${path}`+'/'+ formData.userCertify" width="480">
         </el-form-item>
         <el-form-item label="审核:">
           <el-radio-group v-model="formData.verify" size="medium">
             <el-radio
-                v-for="(item, index) in verifyOptions"
-                :key="index"
-                :label="item.value"
-                :value="item.value"
+              v-for="(item, index) in verifyOptions"
+              :key="index"
+              :label="item.value"
+              :value="item.value"
             >{{ item.label }}</el-radio>
           </el-radio-group>
+        </el-form-item>
+        <el-form-item label="审核备注:" prop="verifyReason">
+          <el-input
+            v-model="formData.verifyReason"
+            type="textarea"
+            placeholder="请输入审核备注"
+            :autosize="{minRows: 4, maxRows: 4}"
+            :style="{width: '100%'}"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -192,6 +214,7 @@ const handleExcelExport = (fileName) => {
 // 自动化生成的字典（可能为空）以及字段
 const formData = ref({
   verify: null,
+  verifyReason: '',
   userCertify: '',
   address: '',
   city: '',
@@ -240,11 +263,13 @@ const pageSize = ref(10)
 const tableData = ref([])
 const searchInfo = ref({
   UID: '',
+  name: '',
+  verify: '',
 })
 
 // 重置
 const onReset = () => {
-  searchInfo.value = { UID: '' }
+  searchInfo.value = { UID: '', name: '', verify: '' }
 }
 
 // 搜索
@@ -390,6 +415,8 @@ const openDialog = () => {
 const closeDialog = () => {
   dialogFormVisible.value = false
   formData.value = {
+    verify: null,
+    verifyReason: '',
     address: '',
     city: '',
     conditions: '',

@@ -8,6 +8,12 @@
       <el-main>
         <el-form ref="elForm" :model="formData" :rules="rules" size="small" label-width="100px">
           <el-scrollbar height="600px">
+            <el-form-item label="通知:" style="color: red">
+              <span style="float: left">系统报名时间已截止，新同学提交的报名信息后台不在审核，请知晓。已提交报名信息同学可以继续修改信息，修改图片或证明信息上传成功后不要忘记点击提交按钮，感谢配合！</span>
+            </el-form-item>
+            <el-form-item label="审核结果:" style="color: red" v-if="formData.verifyReason !== ''">
+              <span style="float: left">{{formData.verifyReason}}</span>
+            </el-form-item>
             <el-form-item label="报名项目" prop="professionalName">
               <el-select
                 v-model="formData.professionalName"
@@ -501,6 +507,7 @@ export default {
         isPay: undefined,
         payAmount: undefined,
         verify:undefined,
+        verifyReason:undefined,
       },
       rules: {
         name: [{

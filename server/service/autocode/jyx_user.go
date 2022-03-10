@@ -75,6 +75,12 @@ func (jyxUserService *JyxUserService)GetJyxUserInfoList(info autoCodeReq.JyxUser
 	if info.ProfessionalName != "" {
 		db = db.Where("professionalName = ?", info.ProfessionalName)
 	}
+	if *info.Verify > 0 {
+		db = db.Where("verify = ?", *info.Verify)
+	}
+	if info.Name != "" {
+		db = db.Where("name = ?", info.Name)
+	}
     var jyxUsers []autocode.JyxUser
     // 如果有条件搜索 下方会自动创建搜索语句
 	err = db.Count(&total).Error
@@ -82,6 +88,6 @@ func (jyxUserService *JyxUserService)GetJyxUserInfoList(info autoCodeReq.JyxUser
     	return
     }
 
-	err = db.Limit(limit).Offset(offset).Find(&jyxUsers).Error
+	err = db.Order("id desc").Limit(limit).Offset(offset).Find(&jyxUsers).Error
 	return err, jyxUsers, total
 }
