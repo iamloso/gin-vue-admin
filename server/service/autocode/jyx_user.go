@@ -81,6 +81,9 @@ func (jyxUserService *JyxUserService)GetJyxUserInfoList(info autoCodeReq.JyxUser
 	if info.Name != "" {
 		db = db.Where("name = ?", info.Name)
 	}
+	if info.IsPay != "" {
+		db = db.Where("isPay = ?", info.IsPay)
+	}
     var jyxUsers []autocode.JyxUser
     // 如果有条件搜索 下方会自动创建搜索语句
 	err = db.Count(&total).Error

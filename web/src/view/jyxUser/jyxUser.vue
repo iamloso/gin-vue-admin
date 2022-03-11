@@ -18,6 +18,16 @@
             />
           </el-select>
         </el-form-item>
+        <el-form-item label="支付状态" prop="isPay">
+          <el-select v-model="searchInfo.isPay" placeholder="请选择支付状态" clearable :style="{width: '100%'}">
+            <el-option
+                v-for="(item, index) in paymentOptions"
+                :key="index"
+                :label="item.label"
+                :value="item.value"
+            />
+          </el-select>
+        </el-form-item>
         <el-form-item>
           <el-button size="mini" type="primary" icon="search" @click="onSubmit">查询</el-button>
           <el-button size="mini" icon="refresh" @click="onReset">重置</el-button>
@@ -259,6 +269,14 @@ const verifyOptions = ref([{
   'value': 99
 }])
 
+const paymentOptions = ref([{
+  'label': '已支付',
+  'value': '已支付'
+}, {
+  'label': '未支付',
+  'value': '未支付'
+}])
+
 // =========== 表格控制部分 ===========
 const page = ref(1)
 const total = ref(0)
@@ -268,11 +286,12 @@ const searchInfo = ref({
   UID: '',
   name: '',
   verify: '',
+  isPay: '',
 })
 
 // 重置
 const onReset = () => {
-  searchInfo.value = { UID: '', name: '', verify: '' }
+  searchInfo.value = { UID: '', name: '', verify: '', isPay: '' }
 }
 
 // 搜索
