@@ -632,6 +632,12 @@ export default {
         'value': 2
       }],
       eduLevelOptions: [{
+        'label': '初中',
+        'value': 4
+      }, {
+        'label': '高中',
+        'value': 5
+      }, {
         'label': '大学专科和专科学校',
         'value': 1
       }, {
