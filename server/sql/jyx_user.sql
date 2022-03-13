@@ -39,4 +39,5 @@ create table gva.jyx_user (
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 alter table gva.jyx_user add verify int not null default 99 comment '1:审核通过|2：未通过' after payAmount;
+alter table gva.jyx_user modify verify int not null default 99 comment '1:审核通过|2：未通过' after payAmount;
 alter table gva.jyx_user add verify_reason text comment '审核备注' after verify;
