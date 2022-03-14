@@ -38,13 +38,8 @@ func (*Local) UploadFile(file *multipart.FileHeader, c *gin.Context) (string, st
 	name = strings.TrimSuffix(file.Filename, ext)
 	if picType != "" {
 		filePath = global.GVA_CONFIG.Local.Path + "/" + picType
-		if UID != "" && (picType == "userPic" || picType == "userPay") {
-			if picType == "userPic" {
-				filename = UID + ext
-			}
-			if picType == "userPay" {
-				filename = UID + "_" + time.Now().Format("20060102150405") + ext
-			}
+		if UID != "" {
+			filename = UID + ext
 		} else {
 			filename = name + "_" + time.Now().Format("20060102150405") + ext
 		}
