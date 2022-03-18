@@ -411,7 +411,7 @@ const updateJyxUserFunc = async(row) => {
 
 // 删除行
 const deleteJyxUserFunc = async(row) => {
-  const res = await deleteJyxUser({ ID: row.ID })
+  const res = await deleteJyxUser({ ID: row.ID, UID: row.UID })
   if (res.code === 0) {
     ElMessage({
       type: 'success',

@@ -7,9 +7,11 @@ import (
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/request"
 	"github.com/flipped-aurora/gin-vue-admin/server/model/common/response"
 	"github.com/flipped-aurora/gin-vue-admin/server/service"
+	"github.com/flipped-aurora/gin-vue-admin/server/utils"
 	"github.com/gin-gonic/gin"
 	"go.uber.org/zap"
 	"log"
+	"os"
 )
 
 type JyxUserApi struct {
@@ -77,6 +79,31 @@ func (jyxUserApi *JyxUserApi) DeleteJyxUser(c *gin.Context) {
         global.GVA_LOG.Error("删除失败!", zap.Error(err))
 		response.FailWithMessage("删除失败", c)
 	} else {
+		picPath := global.GVA_CONFIG.Excel.UserPic
+		payPath := global.GVA_CONFIG.Excel.UserPay
+		certifyPath := global.GVA_CONFIG.Excel.UserCertify
+
+		suffixArr := []string{".jpg", ".png", ".jpeg"}
+		for _, suffix := range suffixArr {
+			fullPicPath := picPath + jyxUser.UID + suffix
+			fullPayPath := payPath + jyxUser.UID + suffix
+			fullCertifyPath := certifyPath + jyxUser.UID + suffix
+			ok, _ := utils.PathExists(fullPicPath)
+			if ok {
+				os.Remove(fullPicPath)
+			}
+
+			ok, _ = utils.PathExists(fullPayPath)
+			if ok {
+				os.Remove(fullPayPath)
+			}
+
+			ok, _ = utils.PathExists(fullCertifyPath)
+			if ok {
+				os.Remove(fullCertifyPath)
+			}
+		}
+
 		response.OkWithMessage("删除成功", c)
 	}
 }
